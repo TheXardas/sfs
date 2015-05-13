@@ -1,0 +1,24 @@
+.form-field {
+    clear: both;
+    padding: 20px;
+}
+    .form-field-label {
+        float: left;
+        text-align: right;
+        width: 100px;
+        padding-right: 20px;
+    }
+    .form-field-input {
+        width: 440px;
+        float: left;
+        text-align: left;
+    }
+
+    .form-field-input input,
+    .form-field-input textarea
+    {
+        width: 400px;
+    }
+    .form-submit {
+        text-align: center;
+    }

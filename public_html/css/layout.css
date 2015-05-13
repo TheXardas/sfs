@@ -1,0 +1,81 @@
+body {
+    font-family: tahoma, arial, verdana, sans-serif, Lucida Sans;
+    margin: 0;
+}
+
+h3 {
+    color: #45688E;
+}
+
+.container {
+    width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 5;
+}
+
+.header {
+    position: relative;
+    background: #4e729a;
+    height: 30px;
+    clear: both;
+    color: #E8EFF7;
+    padding: 5px;
+    line-height: 2em;
+
+    /** border **/
+    -moz-border-radius: 0 0 10px 10px;
+    -webkit-border-radius: 0 0 10px 10px;
+    border-radius: 0 0 10px 10px;
+    -khtml-border-radius: 0 0 10px 10px;
+}
+    .logo {
+        font-family: arial;
+        font-size: 2em;
+        float: left;
+    }
+
+    .current-user {
+        float: right;
+    }
+        .current-user-name {
+            display: inline-block;
+        }
+        .current-user-logout-link {
+            display: inline-block;
+        }
+        .current-user-logout-link a {
+            color: #E8EFF7;
+        }
+
+.navigation-bar {
+    float: left;
+    width: 125px;
+    padding: 10px;
+    font-size: 0.8em;
+}
+    .main-menu {
+
+    }
+        .main-menu-item {
+
+        }
+            .main-menu-item-link-text {
+                display: block;
+                text-decoration: none;
+                width: 100px;
+                height: 2em;
+                line-height: 2em;
+                padding-left: 5px;
+            }
+            .main-menu-item-link-text:hover {
+                background-color: aliceblue;
+            }
+
+.main-content {
+    float: left;
+    width: 625px;
+    padding: 10px;
+    border: lightgray solid 1px;
+    border-top: none;
+}

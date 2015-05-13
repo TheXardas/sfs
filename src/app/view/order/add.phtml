@@ -1,0 +1,37 @@
+<div class="add-order-form-wrapper form-wrapper">
+	<h3>Новый заказ</h3>
+	<form id="add-order-form" class="form" method="post" action="/order/add">
+		<div class="form-field">
+			<div class="form-field-label">
+				<label for="add-order-subject-input">Задача:</label>
+			</div>
+			<div class="form-field-input">
+				<input id="add-order-subject-input" type="text" name="subject" />
+			</div>
+		</div>
+
+		<div class="form-field">
+			<div class="form-field-label">
+				<label for="add-order-description-input">Описание:</label>
+			</div>
+			<div class="form-field-input">
+				<textarea id="add-order-description-input" name="description"></textarea>
+			</div>
+		</div>
+
+		<div class="form-field">
+			<div class="form-field-label">
+				<label for="add-order-price-input">Стоимость:</label>
+			</div>
+			<div class="form-field-input">
+				<input id="add-order-price-input" type="number" name="price" min="100" max="1000000" /> <span class="rouble">руб.</span>
+			</div>
+		</div>
+
+		<div class="form-field">
+			<div class="form-submit">
+				<input type="submit" value="Сохранить" />
+			</div>
+		</div>
+	</form>
+</div>
