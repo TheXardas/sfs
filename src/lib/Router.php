@@ -1,11 +1,8 @@
 <?
 namespace Router;
 
-function getActionFromUri($uri) {
-	$controller = '';
-	$action = '';
-	$params = [];
-
+function getActionFromUri($uri)
+{
 	$routes = getRoutesConfig();
 
 	// Убираем get-параметры и #-hash
@@ -35,7 +32,7 @@ function getActionFromUri($uri) {
 	// TODO реагировать на авторизацию
 	if (!$controller) {
 		$controller = 'order';
-		$action = 'addForm';
+		$action = 'list';
 	}
 
 	$result = [

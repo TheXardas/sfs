@@ -16,13 +16,13 @@ function process($controller, $action, $params = array()) {
 	}
 	// TODO detect view type (html vs json)
 
-	echo \View\render($result['view']);
+	echo \View\render($result['view'], $result['ctx']);
 }
 
 function run($controller, $action, $params = array()) {
 	$file = CONTROLLER_DIR."/$controller/$action.php";
 	if (!$controller || !$action) {
-		throw new \Exception('Tried to run empty controller or action');
+		throw new \Exception('Failed to find action for requested uri');
 	}
 	if (!file_exists($file)) {
 		throw new \Exception(sprintf('Failed to find action %1%:%2%', $controller, $action));

@@ -13,7 +13,7 @@ namespace View;
  * @return string
  * @throws \Exception
  */
-function render($view) {
+function render($view, $ctx = []) {
 	ob_start();
 	include VIEW_DIR."/layout.phtml";
 	$layout = ob_get_clean();

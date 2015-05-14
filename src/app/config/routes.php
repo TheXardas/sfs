@@ -13,5 +13,9 @@ return [
 	'auth' => [
 		'controller' => 'auth',
 		'action' => 'login',
-	]
+	],
+	'neworder' => [
+		'controller' => 'order',
+		'action' => 'addForm',
+	],
 ];

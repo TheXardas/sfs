@@ -1,5 +1,4 @@
 <?
-
 namespace Session;
 
 function start() {
@@ -16,4 +15,18 @@ function set($key, $value) {
 
 function destroy() {
 	return session_destroy();
+}
+
+function getCurrentUser() {
+	return [
+		'name' => 'Василий Пупкин',
+		'login' => 'vasyapup',
+		'role' => 1,
+	];
+
+	return [
+		'name' => get('user_name'),
+		'login' => get('user_login'),
+		'role' => get('user_role'),
+	];
 }
