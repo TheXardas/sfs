@@ -19,6 +19,10 @@
     {
         width: 400px;
     }
+    .form-field-input textarea {
+      height: 200px;
+    }
+
     .form-submit {
         text-align: center;
     }

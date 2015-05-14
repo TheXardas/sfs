@@ -12,12 +12,15 @@
 		<script type="text/javascript" src="/js/jquery.js"></script>
 		<script type="text/javascript" src="/js/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.form.js"></script>
+		<script type="text/javascript" src="/js/common.js"></script>
 	</head>
 
 	<body>
 		<div class="container">
 			<div class="header">
-				<div class="logo">SFS</div>
+				<a href="/" title="Simple Freelance System">
+					<div class="logo">SFS</div>
+				</a>
 
 				<div class="current-user">
 					<div class="current-user-name">Василий Пупкин</div>
@@ -43,8 +46,7 @@
 			</div>
 
 			<div class="main-content">
-				<? include('order/list.phtml') ?>
-				<? include('order/add.phtml') ?>
+				%#main-content#%
 			</div>
 		</div>
 	</body>
