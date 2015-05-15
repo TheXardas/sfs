@@ -17,6 +17,9 @@ function connect($dbName) {
 		$user = \Config\get("db.$dbName.user");
 		$pass = \Config\get("db.$dbName.pass");
 		$connect = mysqli_connect( $host, $user, $pass );
+		if (mysqli_connect_errno() !== 0) {
+			throw new \Exception(sprintf('Failed connecting to database %1', $dbName));
+		}
 		$connections[$host] = $connect;
 	}
 	return $connections[$host];

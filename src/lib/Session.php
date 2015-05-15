@@ -19,12 +19,14 @@ function destroy() {
 
 function getCurrentUser() {
 	return [
+		'id' => 123,
 		'name' => 'Василий Пупкин',
 		'login' => 'vasyapup',
 		'role' => 1,
 	];
 
 	return [
+		'id' => get('user_id'),
 		'name' => get('user_name'),
 		'login' => get('user_login'),
 		'role' => get('user_role'),

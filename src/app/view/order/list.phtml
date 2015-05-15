@@ -8,7 +8,7 @@
 	<div class="orders-list">
 		<? foreach ($ctx['orders'] as $order) : ?>
 			<div class="orders-list-item">
-
+				<?= \View\widget('order', 'card', ['order' => $order]); ?>
 			</div>
 		<? endforeach ?>
 	</div>

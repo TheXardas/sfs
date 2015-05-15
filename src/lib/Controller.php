@@ -14,9 +14,19 @@ function process($controller, $action, $params = array()) {
 	if (empty($result['view'])) {
 		$result['view'] = "/$controller/$action";
 	}
-	// TODO detect view type (html vs json)
 
-	echo \View\render($result['view'], $result['ctx']);
+	if (\Request\isPost() && \Request\isAjax()) {
+		// возвращаем json
+		echo json_encode($result);
+	}
+	else {
+		// возвращает html
+		$embedded = false;
+		if (!empty($params['embedded'])) {
+			$embedded = true;
+		}
+		echo \View\render($result['view'], $result['ctx'], $embedded);
+	}
 }
 
 function run($controller, $action, $params = array()) {
@@ -30,8 +40,13 @@ function run($controller, $action, $params = array()) {
 	return include $file;
 }
 
-function redirect($url) {
-	header("Location: $url");
+function redirect($url, $forceAjax = false) {
+	if (!\Request\isAjax() || $forceAjax) {
+		header("Location: $url");
+		exit;
+	}
+
+	header("X-REDIRECT-TO-LOCATION: $url");
 	exit;
 }
 
@@ -41,4 +56,46 @@ function delegateTo($controller, $action, $params = array()) {
 
 function error($code) {
 	// todo implement
+}
+
+function filterParams($definitions, $params) {
+	$rawParams = $params['raw'];
+	$result = [];
+	foreach ($definitions as $paramName => $definition) {
+		if (!is_array($definition)) {
+			throw new \Exception('Param definition should be array');
+		}
+
+		if (!isset($definition[0])) {
+			throw new \Exception('Empty definition');
+		}
+		$type = $definition[0];
+		$value = NULL;
+		if (isset($rawParams[$paramName])) {
+			$value = filterParamByType($rawParams[$paramName], $type);
+		}
+		if ($value === NULL && array_key_exists(1, $definition)) {
+			$value = $definition[1];
+		}
+		$result[] = $value;
+	}
+	return $result;
+}
+
+function filterParamByType($value, $type) {
+	switch ($type) {
+		case 'string':
+			$value = (string) $value;
+			break;
+		case 'int':
+			$value = (int) $value;
+			break;
+		case 'array':
+			$value = (array) $value;
+			break;
+		default:
+			throw new \Exception(sprintf('Unknown parameter type: %1', $type));
+	}
+
+	return $value;
 }

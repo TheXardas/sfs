@@ -12,3 +12,7 @@ function isAjax() {
 function getParams() {
 	return $_REQUEST;
 }
+
+function isPost() {
+	return $_SERVER['REQUEST_METHOD'] === 'POST';
+}

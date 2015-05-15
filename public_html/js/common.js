@@ -4,10 +4,15 @@ $(document).ready(function() {
 			this.$form = $form;
 			$form.find('.form-submit input').prop('disabled', true);
 		},
-		error: function(data, qwe, ewrt) {
+		error: function(data) {
+			alert(data.error);
 			this.$form.find('.form-submit input').prop('disabled', false);
 		},
-		success: function(data, qwe, ewrt) {
+		success: function(data) {
+			data = JSON.parse(data);
+			if (data.error) {
+				return this.error(data);
+			}
 			this.$form.find('.form-submit input').prop('disabled', false);
 		}
 	});

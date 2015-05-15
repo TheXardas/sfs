@@ -1,6 +1,7 @@
 <?
 namespace Mysql;
 
+// TODO энкапсулировать в отдельный драйвер mysql, чтобы по всему проекту был абстрактный DB.
 /**
  * Возвращает первую попавшую строку из select'а.
  *
@@ -58,7 +59,7 @@ function select($connect, $table, array $columns, array $where, array $orderBy =
 		}
 	}
 
-	$res = mysqli_query($connect, $sql);
+	$res = _query($connect, $sql);
 
 	$result = [];
 	while ($row = mysqli_fetch_assoc($res)) {
@@ -85,7 +86,7 @@ function insert($connect, $table, array $values) {
 
 	$sql = "INSERT INTO $table SET $valuesStr";
 
-	mysqli_query($connect, $sql);
+	_query($connect, $sql);
 
 	return mysqli_insert_id($connect);
 }
@@ -111,7 +112,7 @@ function update($connect, $table, array $values, array $where) {
 
 	$sql = "UPDATE $table SET $valuesStr WHERE $whereStr";
 
-	mysqli_query($connect, $sql);
+	_query($connect, $sql);
 
 	return mysqli_affected_rows($connect);
 }
@@ -195,3 +196,11 @@ function _getOrderByStringFromArray(array $orderBy) {
 	return $sql;
 }
 
+function _query($connect, $sql) {
+	$result = mysqli_query($connect, $sql);
+	if ($result === false) {
+		$error = mysqli_error($connect);
+		throw new \Exception(sprintf('Failed quering DB: %s', $error));
+	}
+	return $result;
+}

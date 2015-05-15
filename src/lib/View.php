@@ -13,10 +13,13 @@ namespace View;
  * @return string
  * @throws \Exception
  */
-function render($view, $ctx = []) {
-	ob_start();
-	include VIEW_DIR."/layout.phtml";
-	$layout = ob_get_clean();
+function render($view, $ctx = [], $embedded = false) {
+	$layout = '%#main-content#%';
+	if (!\Request\isAjax() && !$embedded) {
+		ob_start();
+		include VIEW_DIR . "/layout.phtml";
+		$layout = ob_get_clean();
+	}
 
 	ob_start();
 	include VIEW_DIR."$view.phtml";
@@ -88,8 +91,22 @@ function injectBlock($parentBlockContent, $blockName, $blockContent) {
  *
  * @param $controller
  * @param $action
- * @param array $params
+ * @param array $rawParams
  */
-function widget($controller, $action, $params = array()) {
+function widget($controller, $action, $rawParams = array()) {
+	$params = [
+		'embedded' => true,
+		'raw' => $rawParams,
+	];
 	\Controller\process($controller, $action, $params);
+}
+
+
+/**
+ * Эскейпит строку для вставки в html
+ * @param string $string
+ * @return string
+ */
+function esc($string) {
+	return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 }
