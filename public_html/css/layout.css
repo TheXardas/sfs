@@ -80,3 +80,13 @@ h3 {
     border: lightgray solid 1px;
     border-top: none;
 }
+
+    .main-content.loading {
+        opacity: 0.5;
+    }
+
+.footer {
+    clear: both;
+    height: 30px;
+    position: relative;
+}

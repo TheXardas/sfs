@@ -26,3 +26,62 @@
     .form-submit {
         text-align: center;
     }
+
+        .form-submit input {
+            position: relative;
+            vertical-align: top;
+            height: 40px;
+            padding: 0 30px;
+            font-size: 1.2em;
+            color: white;
+            text-align: center;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+            background: #4e729a;
+            border: 0;
+            border-bottom: 2px solid #3b5a81;
+            cursor: pointer;
+            -webkit-box-shadow: inset 0 -2px #1d5279;
+            box-shadow: inset 0 -2px #1d5279;
+        }
+        .form-submit input:disabled {
+            top: 1px;
+            outline: none;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            cursor: default;
+            opacity: 0.8;
+        }
+        .form-submit input:active {
+            top: 1px;
+            outline: none !important;
+            -webkit-box-shadow: none !important;
+            box-shadow: none !important;
+        }
+
+        .form-submit.green input {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+            background: #2ecc71;
+            border-bottom: 2px solid #28be68;
+            -webkit-box-shadow: inset 0 -2px #28be68;
+            box-shadow: inset 0 -2px #28be68;
+        }
+
+        .form-submit.small input {
+            height: 30px;
+            padding: 0 20px;
+            font-size: 1.1em;
+        }
+
+    .form-bubble {
+        background-color: #fdf5ce;
+        border: #fed22f 1px solid;
+    }
+
+    .form-error {
+        font-size: 1.2em;
+        margin: auto;
+        width: 400px;
+        background-color: #ffdfd5;
+        border: #900a0a 1px solid;
+        padding: 10px;
+    }

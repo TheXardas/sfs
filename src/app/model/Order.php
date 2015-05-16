@@ -4,18 +4,18 @@ require_once LIB_DIR.'/DbManager.php';
 require_once LIB_DIR.'/Mysql.php';
 require_once MODEL_DIR.'/User.php';
 
-define('ORDER_LIST_LIMIT', 30);
+define('ORDER_LIST_LIMIT', 5);
 
 function get($id) {
 
 }
 
-function getActiveOrders($currentUser) {
+function getActiveOrders($currentUser, $offset = null) {
 	if ($currentUser['role'] === EXECUTOR_ROLE) {
-		return getActiveOrdersForExecutor($currentUser['id']);
+		return getActiveOrdersForExecutor($currentUser['id'], $offset);
 	}
 	elseif ($currentUser['role'] === CUSTOMER_ROLE) {
-		return getActiveOrdersForCustomer($currentUser['id']);
+		return getActiveOrdersForCustomer($currentUser['id'], $offset);
 	}
 	else {
 		// TODO вероятно ошибка?
@@ -23,17 +23,68 @@ function getActiveOrders($currentUser) {
 	}
 }
 
+function getActiveOrdersCount($currentUser) {
+	if ($currentUser['role'] === EXECUTOR_ROLE) {
+		return getActiveOrdersCountForExecutor($currentUser['id']);
+	}
+	elseif ($currentUser['role'] === CUSTOMER_ROLE) {
+		return getActiveOrdersCountForCustomer($currentUser['id']);
+	}
+	else {
+		// TODO вероятно ошибка?
+		return 0;
+	}
+}
+
 function getActiveOrdersForExecutor($executorId, $offset = null) {
 	$where = ['is_finished' => 0];
 	$orderBy = ['time_created' => 'DESC'];
-	return \Mysql\select(_getConnect(), _getTable(), _getColumnList(), $where, $orderBy, ORDER_LIST_LIMIT, $offset);
+	return getOrders($where, $orderBy, ORDER_LIST_LIMIT, $offset);
+}
+
+function getActiveOrdersCountForExecutor($executorId) {
+	$where = ['is_finished' => 0];
+	return getOrdersCount($where);
 }
 
 function getActiveOrdersForCustomer($customerId, $offset = null) {
-	// select * from orders where is_finished = 0 and author_id = :author_id order by time_created desc
 	$where = ['is_finished' => 0, 'author_id' => $customerId];
 	$orderBy = ['time_created' => 'DESC'];
-	return \Mysql\select(_getConnect(), _getTable(), _getColumnList(), $where, $orderBy, ORDER_LIST_LIMIT, $offset);
+	return getOrders($where, $orderBy, ORDER_LIST_LIMIT, $offset);
+}
+
+function getActiveOrdersCountForCustomer($customerId) {
+	$where = ['is_finished' => 0, 'author_id' => $customerId];
+	return getOrdersCount($where);
+}
+
+function getOrders($where, $orderBy = null, $limit = null, $offset = null) {
+	$orders = \Mysql\select(_getConnect(), _getTable(), _getColumnList(), $where, $orderBy, $limit, $offset);
+	if ($orders) {
+		// Филлим авторов заказов
+		$userIds = [];
+		// TODO use array_column()
+		foreach ($orders as $order) {
+			$userIds[] = $order['author_id'];
+		}
+
+		$users = \User\getUsersByIds($userIds);
+		foreach ($orders as $key => $order) {
+			$authorId = $order['author_id'];
+			if (!empty($users[$authorId])) {
+				$orders[$key]['author'] = $users[$authorId];
+			}
+			else {
+				throw new \Exception('Failed to find author for order %1!', $order['id']);
+			}
+		}
+	}
+
+	return $orders;
+}
+
+function getOrdersCount($where) {
+	return \Mysql\count(_getConnect(), _getTable(), $where);
 }
 
 /**
@@ -50,23 +101,23 @@ function getActiveOrdersForCustomer($customerId, $offset = null) {
 function create($subject, $description, $price, $author_id = null, $time_created = null) {
 	$subject = trim($subject);
 	if (!$subject) {
-		throw new \Exception('Subject cannot be empty', 800);
+		throw new \Exception('Задача у заказа не может быть пустой', 800);
 	}
 
 	$description = trim($description);
 	if (!$description) {
-		throw new \Exception('Description cannot be empty', 800);
+		throw new \Exception('Описание заказа не может быть пустым', 800);
 	}
 
 	$price = intval($price);
 	if (!$price) {
-		throw new \Exception('Price must be specified', 800);
+		throw new \Exception('Необходимо указать стоимость работы', 800);
 	}
 	if ($price < 100) {
-		throw new \Exception('Price must be more then 100 rubles', 800);
+		throw new \Exception('Стоимость должна быть больше 100 рублей', 800);
 	}
 	if ($price > 100000000) {
-		throw new \Exception('Price must be less then 100000000 rubles', 800);
+		throw new \Exception('Стоимость должна быть меньше 100000000 рублей', 800);
 	}
 
 	if (!$author_id) {

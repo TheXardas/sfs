@@ -1,15 +1,26 @@
-<h3>Список заказов</h3>
+<? if (empty($ctx['hideHeader']) ) : ?>
+	<h3>Список заказов</h3>
+<? endif ?>
 
 <? if (empty($ctx['orders'])): ?>
 	<p>
 		<span>Пока что еще никаких заказов нет..</span> <span>Можно <a href="/neworder">Создать</a></span>
 	</p>
 <? else: ?>
-	<div class="orders-list">
+	<? if (empty($ctx['hideHeader'])) : ?>
+		<div class="orders-list">
+	<? endif ?>
 		<? foreach ($ctx['orders'] as $order) : ?>
 			<div class="orders-list-item">
-				<?= \View\widget('order', 'card', ['order' => $order]); ?>
+				<? \View\widget('order', 'card', ['order' => $order]); ?>
 			</div>
 		<? endforeach ?>
-	</div>
+
+		<? if ($ctx['showPager']) : ?>
+			<div class="orders-list-upload-more"><span class="clickable">Загрузить еще</span></div>
+		<? endif ?>
+	<? if (empty($ctx['hideHeader'])) : ?>
+		</div>
+	<? endif ?>
+
 <? endif ?>

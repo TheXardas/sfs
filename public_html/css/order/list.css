@@ -5,3 +5,14 @@
   .orders-list-item {
     margin: 30px;
   }
+
+  .orders-list-upload-more {
+      background-color: #fffde7;
+      border: solid gray 1px;
+      padding: 10px;
+      position: relative;
+      width: 200px;
+      margin: auto;
+      text-align: center;
+      cursor: pointer;
+  }

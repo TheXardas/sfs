@@ -15,7 +15,10 @@ function process($controller, $action, $params = array()) {
 		$result['view'] = "/$controller/$action";
 	}
 
-	if (\Request\isPost() && \Request\isAjax()) {
+	if (\Request\isPost() && \Request\isAjax() || !empty($result['forceJson'])) {
+		// TODO придумать обработку форм, когда по каким-то причинам аякс не работает, и форма посылается нативно.
+		// По сути надо ошибки показывать в той же форме и все.
+
 		// возвращаем json
 		echo json_encode($result);
 	}
@@ -87,6 +90,7 @@ function filterParamByType($value, $type) {
 		case 'string':
 			$value = (string) $value;
 			break;
+		case 'integer':
 		case 'int':
 			$value = (int) $value;
 			break;

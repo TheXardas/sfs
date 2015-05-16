@@ -20,6 +20,8 @@ function connect($dbName) {
 		if (mysqli_connect_errno() !== 0) {
 			throw new \Exception(sprintf('Failed connecting to database %1', $dbName));
 		}
+		mysqli_set_charset($connect, 'utf8');
+
 		$connections[$host] = $connect;
 	}
 	return $connections[$host];

@@ -19,6 +19,19 @@ function selectOne($connect, $table, array $columns, array $where, array $orderB
 }
 
 /**
+ * Считает количество строк в таблице, удовлетворяющих условиям
+ *
+ * @param $connect
+ * @param $table
+ * @param array $where
+ *
+ * @return mixed
+ */
+function count($connect, $table, array $where) {
+	return (int) selectOne($connect, $table, ['cnt' => 'COUNT(*)'], $where)['cnt'];
+}
+
+/**
  * Выполнить селект и вернуть в виде массива ассоциативных массивов.
  *
  * @param resource $connect
@@ -31,7 +44,7 @@ function selectOne($connect, $table, array $columns, array $where, array $orderB
  * @return array
  * @throws \Exception
  */
-function select($connect, $table, array $columns, array $where, array $orderBy = [], $limit = null, $offset = null)
+function select($connect, $table, array $columns, array $where, array $orderBy = [], $limit = NULL, $offset = NULL, $assocById = false)
 {
 	$columnsStr = _getColumnsStringFromArray($columns);
 	if (!$columnsStr) {
@@ -52,18 +65,24 @@ function select($connect, $table, array $columns, array $where, array $orderBy =
 
 	$limit = (int) $limit;
 	if ($limit > 0 && is_numeric($limit)) {
-		$sql .= " LIMIT $limit";
+		$sql .= " LIMIT ";
 		$offset = (int) $offset;
 		if ($offset > 0 && is_numeric($offset)) {
-			$sql .= ", $offset";
+			$sql .= "$offset, ";
 		}
+		$sql .= $limit;
 	}
 
 	$res = _query($connect, $sql);
 
 	$result = [];
 	while ($row = mysqli_fetch_assoc($res)) {
-		$result[] = $row;
+		if ($assocById) {
+			$result[$row['id']] = $row;
+		}
+		else {
+			$result[] = $row;
+		}
 	}
 	return $result;
 }
@@ -158,8 +177,11 @@ function _getColumnsStringFromArray(array $columns) {
  * Обрабатывает массив условий колонка => значение, возвращает sql-подстроку для подстановки в where
  *
  * @todo дописать возможность использовать null.
+ *
  * @param resource $connect
  * @param array $conditions
+ * @param bool $forUpdate
+ *
  * @return string
  */
 function _getConditionStringFromArray($connect, array $conditions, $forUpdate = false) {
@@ -170,8 +192,21 @@ function _getConditionStringFromArray($connect, array $conditions, $forUpdate = 
 		if ($sql) {
 			$sql .= $separator;
 		}
-		$value = _escape($connect, $value);
-		$sql .= "$column = $value";
+		if (is_array($value)) {
+			$valuesStr = '';
+			foreach ($value as $subValue) {
+				if ($valuesStr) {
+					$valuesStr .= ', ';
+				}
+				$valuesStr .= _escape($connect, $subValue);
+			}
+			if ($valuesStr) {
+				$sql .= "$column IN ( $valuesStr )";
+			}
+		} else {
+			$value = _escape($connect, $value);
+			$sql .= "$column = $value";
+		}
 	}
 	return $sql;
 }

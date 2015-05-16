@@ -1,11 +1,21 @@
+<? /** @var $ctx array */ ?>
+<? require_once HELPER_DIR.'/Date.php' ?>
 <div class="order-card">
-	<div class="order-header">
-		<div class="order-subject"><?= $ctx['subject'] ?></div>
-		<div class="order-time-created"><?= $ctx['time_created'] ?></div>
-	</div>
-	<div class="order-description"><?= $ctx['description'] ?></div>
 	<div class="order-price">
-		<span class="order-price-number"><?= $ctx['price'] ?></span>
-		<span class="order-price-currency">руб.</span>
+		<div class="order-price-number"><?= $ctx['price'] ?></div>
+		<div class="order-price-currency">руб.</div>
+	</div>
+	<div class="order-author"><?= $ctx['author']['name'] ?></div>
+	<div class="order-time-created"><?= \DateHelper\formatBeautyTime($ctx['time_created']) ?></div>
+	<div class="order-subject"><?= $ctx['subject'] ?></div>
+	<div class="order-description large-text">
+		<?= $ctx['description'] ?>
+	</div>
+	<div class="order-work-form-wrapper">
+		<form class="order-work-form form" action="/order/work" method="POST">
+			<div class="form-submit green small">
+				<input type="submit" value="Выполнить" />
+			</div>
+		</form>
 	</div>
 </div>

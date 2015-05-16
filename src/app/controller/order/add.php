@@ -1,4 +1,5 @@
 <?
+	sleep(1);
 require_once MODEL_DIR.'/Order.php';
 
 list($subject, $description, $price) = \Controller\filterParams([
@@ -17,6 +18,7 @@ catch (Exception $e) {
 if ($error) {
 	return [
 		'error' => $error,
+		'forceJson' => true,
 	];
 }
 else {

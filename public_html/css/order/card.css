@@ -1,6 +1,72 @@
 .order-card {
-  background-color: #fffde7;
-  border: solid gray 1px;
-  padding: 10px;
+    background-color: #fffde7;
+    border: solid gray 1px;
+    padding: 10px;
+    position: relative;
 }
 
+.order-card:before {
+    content:"";
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    border-width: 0 30px 30px 0;
+    border-style: solid;
+    /*border-color: #D9E8CA white;*/
+    border-color: #D9E8CA white;
+    display: block;
+    width: 0;
+
+    /* Optional: shadow */
+    -webkit-box-shadow:0 0 0 rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2);
+    -moz-box-shadow:0 0 0 rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2);
+    box-shadow:0 0 0 rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2);
+}
+
+    .order-author {
+        font-weight: bold;
+        font-size: 0.8em;
+        color: #7e7e7e;
+
+    }
+    .order-time-created {
+        font-weight: bold;
+        font-size: 0.8em;
+        color: #7e7e7e;
+    }
+
+    .order-subject {
+        font-size: 1.2em;
+        margin: 5px 0;
+    }
+
+    .order-price {
+        text-align: right;
+        float: right;
+        font-size: 1.2em;
+        width: 120px;
+        height: 50px;
+        top: 0;
+        margin-right: 25px;
+    }
+        .order-price-number {
+            color: #608d16;
+            display: inline;
+        }
+        .order-price-currency {
+            display: inline;
+        }
+
+    .order-description {
+        margin: 5px;
+        font-size: 0.9em;
+        padding: 5px;
+        clear: both;
+        white-space: pre-line;
+    }
+    .order-card .large-text-toggler {
+        display: block;
+        font-size: 0.9em;
+        margin-bottom: 5px;
+        margin-left: 5px;
+    }

@@ -2,3 +2,18 @@
     /*font-size: 150px;
     font-family: u2000;*/
 }
+
+.large-text.cutted {
+    height: 160px;
+    overflow: hidden;
+    -webkit-box-shadow: inset 0 -12px 17px -11px rgba(193, 195, 194, 0.65);
+    -moz-box-shadow: inset 0 -12px 17px -11px rgba(193, 195, 194, 0.65);
+    box-shadow: inset 0 -12px 17px -11px rgba(193, 195, 194, 0.65);
+    border-bottom: 1px solid #E0B8B8;
+}
+
+.clickable {
+    cursor: pointer;
+    border-bottom: 1px dotted #00009a;
+    color: #00009a;
+}
