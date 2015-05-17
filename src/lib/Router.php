@@ -12,12 +12,21 @@ function getActionFromUri($uri)
 
 	// Сначала проверяем, может быть у нас кастомный роут, по ключу.
 	if (!empty($routes[$uri])) {
-		return $routes[$uri];
+		$result = $routes[$uri];
+		$requestParams = \Request\getParams();
+		if ($requestParams) {
+			$result['params']['raw'] = $requestParams;
+		}
+		if (!isset($result['params'])) {
+			$result['params'] = [];
+		}
+		return $result;
 	}
 
 
 	// Парсим uri
 	// В случае автоматической маршрутизации не должно быть никаких символов, кроме букв и "/".
+	// TODO когда надо будет открыть карточку конкретной сущности (с id), тогда это правило надо будет расширить
 	if (preg_match('|[^a-zA-Z/]|', $uri)) {
 		return [
 			'controller' => '',
@@ -27,12 +36,22 @@ function getActionFromUri($uri)
 	}
 
 	// Для автоматической маршрутизации считаем, что маршрут имеет вид $controller/$action
-	list($controller, $action) = explode('/', $uri, 2);
+	$controller = '';
+	$action = '';
+	$params = [];
+	if ($uri) {
+		list($controller, $action) = explode( '/', $uri, 2 );
+	}
 
-	// TODO реагировать на авторизацию
+	// TODO вытащить в конфиг экшн по умолчанию
 	if (!$controller) {
-		$controller = 'order';
-		$action = 'list';
+		if (\AuthHelper\isLoggedOn()) {
+			$controller = 'order';
+			$action = 'list';
+		}
+		else {
+			return getActionFromUri('/login');
+		}
 	}
 
 	$result = [

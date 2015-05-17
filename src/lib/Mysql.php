@@ -15,7 +15,8 @@ namespace Mysql;
  * @throws \Exception
  */
 function selectOne($connect, $table, array $columns, array $where, array $orderBy = []) {
-	return reset(select($connect, $table, $columns, $where, $orderBy, 1));
+	$result = select($connect, $table, $columns, $where, $orderBy, 1);
+	return reset($result);
 }
 
 /**

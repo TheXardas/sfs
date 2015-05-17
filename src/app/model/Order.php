@@ -7,6 +7,12 @@ require_once MODEL_DIR.'/Bank.php';
 
 define('ORDER_LIST_LIMIT', 5);
 
+/**
+ * @param $id
+ *
+ * @return mixed
+ * @throws \Exception
+ */
 function get($id) {
 	if (!$id) {
 		throw new \Exception('ID required!');
@@ -14,6 +20,12 @@ function get($id) {
 	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['id' => $id]);
 }
 
+/**
+ * @param $orderId
+ * @param array $currentUser
+ *
+ * @throws \Exception
+ */
 function work($orderId, array $currentUser) {
 	// TODO залочку, конечно, напишем еще
 	// START LOCK
@@ -39,22 +51,29 @@ function work($orderId, array $currentUser) {
 
 	// Вычитаем со счета клиента
 	$customer = \User\get($order['author_id']);
-	\Bank\getPaymentFrom($customer, $order['price']);
+	\Bank\getPaymentFrom($customer, $order['price'], $orderId, GET_PAYMENT_FOR_WORK_OPERATION);
 
 	// Пишем на счет системы комиссию
 	$systemUser = \User\getSystemUser();
 	$commission = round(\Bank\getSystemCommission() * $order['price']);
-	\Bank\payTo($systemUser, $commission);
+	\Bank\payTo($systemUser, $commission, $orderId, SYSTEM_COMMISSION_OPERATION);
 
 	// Платим работнику гонорар
 	$executorPayment = $order['price'] - $commission;
 	// Выбираем из базы текущего пользователя, чтобы точно знать его счет в рамках этой транзакции
 	$executor = \User\get($currentUser['id']);
-	\Bank\payTo($executor, $executorPayment);
+	\Bank\payTo($executor, $executorPayment, $orderId, PAY_FOR_WORK_OPERATION);
 
 	// END LOCK
 }
 
+/**
+ * @param $orderId
+ * @param $executorId
+ *
+ * @return int
+ * @throws \Exception
+ */
 function finishOrder($orderId, $executorId) {
 	return \Mysql\update(_getConnect(), _getTable(), [
 		'is_finished' => 1,
@@ -65,6 +84,12 @@ function finishOrder($orderId, $executorId) {
 	]);
 }
 
+/**
+ * @param $currentUser
+ * @param null $offset
+ *
+ * @return array
+ */
 function getActiveOrders($currentUser, $offset = null) {
 	if ($currentUser['role'] === EXECUTOR_ROLE) {
 		return getActiveOrdersForExecutor($currentUser['id'], $offset);
@@ -78,6 +103,11 @@ function getActiveOrders($currentUser, $offset = null) {
 	}
 }
 
+/**
+ * @param $currentUser
+ *
+ * @return int|mixed
+ */
 function getActiveOrdersCount($currentUser) {
 	if ($currentUser['role'] === EXECUTOR_ROLE) {
 		return getActiveOrdersCountForExecutor($currentUser['id']);
@@ -91,28 +121,61 @@ function getActiveOrdersCount($currentUser) {
 	}
 }
 
+/**
+ * @param $executorId
+ * @param null $offset
+ *
+ * @return array
+ * @throws \Exception
+ */
 function getActiveOrdersForExecutor($executorId, $offset = null) {
 	$where = ['is_finished' => 0];
 	$orderBy = ['time_created' => 'DESC'];
 	return getOrders($where, $orderBy, ORDER_LIST_LIMIT, $offset);
 }
 
+/**
+ * @param $executorId
+ *
+ * @return int|mixed
+ */
 function getActiveOrdersCountForExecutor($executorId) {
 	$where = ['is_finished' => 0];
 	return getOrdersCount($where);
 }
 
+/**
+ * @param $customerId
+ * @param null $offset
+ *
+ * @return array
+ * @throws \Exception
+ */
 function getActiveOrdersForCustomer($customerId, $offset = null) {
 	$where = ['is_finished' => 0, 'author_id' => $customerId];
 	$orderBy = ['time_created' => 'DESC'];
 	return getOrders($where, $orderBy, ORDER_LIST_LIMIT, $offset);
 }
 
+/**
+ * @param $customerId
+ *
+ * @return int|mixed
+ */
 function getActiveOrdersCountForCustomer($customerId) {
 	$where = ['is_finished' => 0, 'author_id' => $customerId];
 	return getOrdersCount($where);
 }
 
+/**
+ * @param $where
+ * @param null $orderBy
+ * @param null $limit
+ * @param null $offset
+ *
+ * @return array
+ * @throws \Exception
+ */
 function getOrders($where, $orderBy = null, $limit = null, $offset = null) {
 	$orders = \Mysql\select(_getConnect(), _getTable(), _getColumnList(), $where, $orderBy, $limit, $offset);
 	if ($orders) {
@@ -138,6 +201,11 @@ function getOrders($where, $orderBy = null, $limit = null, $offset = null) {
 	return $orders;
 }
 
+/**
+ * @param $where
+ *
+ * @return int|mixed
+ */
 function getOrdersCount($where) {
 	return \Mysql\count(_getConnect(), _getTable(), $where);
 }
@@ -205,14 +273,24 @@ function create($subject, $description, $price, $author_id = null, $time_created
 }
 
 
+/**
+ * @return mixed
+ * @throws \Exception
+ */
 function _getConnect() {
 	return \DbManager\connect('orders');
 }
 
+/**
+ * @return string
+ */
 function _getTable() {
 	return \DbManager\getTable('orders');
 }
 
+/**
+ * @return array
+ */
 function _getColumnList() {
 	return [
 		'id' => 'id',

@@ -1,8 +1,8 @@
 $(document).ready(function() {
 	window.nav = {
-		go: function(url) {
+		go: function(url, forceRefresh) {
 			if (this.isLocalUrl(url)) {
-				this.goLocal(url);
+				this.goLocal(url, forceRefresh);
 			}
 			else {
 				this.goExternal(url);
@@ -26,14 +26,20 @@ $(document).ready(function() {
 			return domainRegExp.exec(url)[1];
 		},
 
-		goLocal: function(url) {
+		goLocal: function(url, forceRefresh) {
 			// TODO конечно этот контейнер надо куда-то вынести
 			var $content = $('.main-content');
 			if ($content.hasClass('loading')) return;
 			$content.addClass('loading');
 
+			if (forceRefresh) {
+				this.goExternal(url);
+				return;
+			}
+
 			$content.load(url, function(data) {
 				// todo - обрабатывать title'ы
+				// TODO переделать на $.ajax чтобы убрать "дерганье" при перезагрзуке браузера с форсом
 				window.nav.changeUrl(url, 'Система абстрактных заказов');
 				$content.removeClass('loading');
 

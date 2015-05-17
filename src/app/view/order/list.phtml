@@ -4,7 +4,10 @@
 
 <? if (empty($ctx['orders'])): ?>
 	<p>
-		<span>Пока что еще никаких заказов нет..</span> <span>Можно <a href="/neworder">Создать</a></span>
+		<span>Пока что еще никаких заказов нет..</span>
+		<? if (\User\canCreateOrders()): ?>
+			<span>Можно <a href="/neworder">Создать</a></span>
+		<? endif ?>
 	</p>
 <? else: ?>
 	<? if (empty($ctx['hideHeader'])) : ?>

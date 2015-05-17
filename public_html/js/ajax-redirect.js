@@ -10,7 +10,7 @@
 	 */
 	$document.on('ajaxSuccess, ajaxComplete', function( event, jqXHR ) {
 		if (jqXHR.isRedirect()) {
-			window.nav.go(jqXHR.getTargetUrl());
+			window.nav.go(jqXHR.getTargetUrl(), jqXHR.isRefreshForced());
 			//document.location.href = jqXHR.getTargetUrl();
 		}
 	} );
@@ -22,6 +22,10 @@
 	$document.on('ajaxSend', function(event, jqXHR, ajaxOptions) {
 		jqXHR.isRedirect = function() {
 			return ! this['redirectionDisabled'] && this.getResponseHeader && !! this.getResponseHeader('x-redirect-to-location');
+		};
+
+		jqXHR.isRefreshForced = function() {
+			return !this['redirectionDisabled'] && this.getResponseHeader && !! this.getResponseHeader('x-refresh-browser');
 		};
 
 		jqXHR.getTargetUrl = function() {

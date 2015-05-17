@@ -22,7 +22,11 @@ function render($view, $ctx = [], $embedded = false) {
 	}
 
 	ob_start();
-	include VIEW_DIR."$view.phtml";
+	$viewFile = VIEW_DIR."$view.phtml";
+	if (!file_exists($viewFile)) {
+		throw new \Exception(sprintf('Failed finding view! %1', $view));
+	}
+	include $viewFile;
 	$content = ob_get_clean();
 
 	$layout = injectBlock($layout, 'main-content', $content);

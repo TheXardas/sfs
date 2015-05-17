@@ -3,6 +3,15 @@
 	<form id="register-form" class="form" method="post" action="/register">
 		<div class="form-field">
 			<div class="form-field-label">
+				<label for="name-input">Имя:</label>
+			</div>
+			<div class="form-field-input">
+				<input id="name-input" type="text" name="name" />
+			</div>
+		</div>
+
+		<div class="form-field">
+			<div class="form-field-label">
 				<label for="login-input">Логин:</label>
 			</div>
 			<div class="form-field-input">
@@ -18,15 +27,35 @@
 				<input id="password-input" type="password" name="password" />
 			</div>
 		</div>
-
 		<div class="form-field">
-			<div class="form-submit">
-				<input type="submit" value="Войти" />
+			<div class="form-field-label">
+				<label for="password-confirm-input">Повтор пароля:</label>
+			</div>
+			<div class="form-field-input">
+				<input id="password-confirm-input" type="password" name="password-confirm" />
 			</div>
 		</div>
 
 		<div class="form-field">
-			<span class="">Еще не с нами?</span> <a href="/join">Регистрация</a>
+			<div class="form-field-label">
+				<label for="role-input">Роль:</label>
+			</div>
+			<div class="form-field-input">
+				<select id="role-input" name="role">
+					<option value="<?= EXECUTOR_ROLE ?>">Исполнитель</option>
+					<option value="<?= CUSTOMER_ROLE ?>">Заказчик</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="form-field">
+			<div class="form-submit">
+				<input type="submit" value="Зарегистрироваться" />
+			</div>
+		</div>
+
+		<div class="form-field">
+			<span class="">Уже зарегистрированы?</span> <a href="/login">Войти</a>
 		</div>
 	</form>
 </div>

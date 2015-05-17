@@ -19,7 +19,7 @@ function onFormLoad(form) {
 		change: function() {
 			$form.find('.form-error').remove();
 		},
-		keyup: function() {
+		keydown: function() {
 			$form.find('.form-error').remove();
 		},
 		click: function() {

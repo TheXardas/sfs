@@ -10,7 +10,7 @@
 		<link rel="stylesheet" href="/css/order/card.css" />
 
 		<link rel="stylesheet" href="/css/jquery-ui.min.css"/>
-
+		<? // TODO Это все, конечно, надо подключать через менеджеры статики, учитывать зависимости и т.п., но долго ?>
 		<script type="text/javascript" src="/js/jquery.js"></script>
 		<script type="text/javascript" src="/js/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.form.js"></script>
@@ -31,29 +31,38 @@
 					<div class="logo">SFS</div>
 				</a>
 
-				<div class="current-user">
-					<div class="current-user-account"><?= \Session\getCurrentUser()['money'] ?> р.</div>
+				<? if ($currentUser = \Session\getCurrentUser()) : ?>
+					<div class="current-user">
+						<div class="current-user-account"><?= $currentUser['money'] ?> р.</div>
 
-					<div class="current-user-name"><?= \Session\getCurrentUser()['name'] ?></div>
-					<div class="current-user-logout-link">
-						<a href="/logout">Выйти</a>
+						<div class="current-user-name"><?= $currentUser['name'] ?></div>
+						<div class="current-user-logout-link">
+							<a href="/logout">Выйти</a>
+						</div>
 					</div>
-				</div>
+				<? endif ?>
 			</div>
 
 			<div class="navigation-bar">
 				<div class="main-menu">
-					<div class="main-menu-item">
-						<a class="main-menu-item-link-text" href="/">
-							Заказы
-						</a>
-					</div>
-					<? if (\User\canCreateOrders()): ?>
+					<? if ($currentUser) : ?>
 						<div class="main-menu-item">
-							<a class="main-menu-item-link-text" href="/neworder">
-								Новый
+							<a class="main-menu-item-link-text" href="/">
+								Заказы
 							</a>
 						</div>
+						<? if (\User\canCreateOrders()): ?>
+							<div class="main-menu-item">
+								<a class="main-menu-item-link-text" href="/neworder">
+									Новый
+								</a>
+							</div>
+							<div class="main-menu-item" title="Только для демо!">
+								<a class="main-menu-item-link-text" href="/addMoney">
+									Пополнить счет
+								</a>
+							</div>
+						<? endif ?>
 					<? endif ?>
 				</div>
 			</div>

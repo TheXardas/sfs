@@ -1,14 +1,7 @@
 <?
-// Create order
-
-
-if (Request\isAjax()) {
-	// return json
-}
-else {
-	// redirect to orders list or card
+if (!\User\canCreateOrders()) {
+	// TODO ошибка?
+	\Controller\redirect('/');
 }
 
-return [
-
-];
+return [];

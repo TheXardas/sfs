@@ -25,7 +25,9 @@ function process($controller, $action, $params = array()) {
 		// По сути надо ошибки показывать в той же форме и все.
 
 		// возвращаем json
-		echo json_encode($result['ctx']);
+		if (array_key_exists('ctx', $result)) {
+			echo json_encode( $result['ctx'] );
+		}
 	}
 	else {
 		// возвращает html
@@ -45,6 +47,10 @@ function run($controller, $action, $params = array()) {
 	if (!file_exists($file)) {
 		throw new \Exception(sprintf('Failed to find action %1:%2', $controller, $action));
 	}
+
+	if (\AuthHelper\isLoggedOn() && !empty($params['noLoginRequired']) || !\AuthHelper\isLoggedOn() && empty($params['noLoginRequired'])) {
+		redirect('/', false, true);
+	}
 	$result = include $file;
 
 	if (empty($result)) {
@@ -53,13 +59,16 @@ function run($controller, $action, $params = array()) {
 	return $result;
 }
 
-function redirect($url, $forceAjax = false) {
+function redirect($url, $forceAjax = false, $refreshBrowser = false) {
 	if (!\Request\isAjax() || $forceAjax) {
 		header("Location: $url");
 		exit;
 	}
 
 	header("X-REDIRECT-TO-LOCATION: $url");
+	if ($refreshBrowser) {
+		header('X-REFRESH-BROWSER: 1');
+	}
 	exit;
 }
 
@@ -72,7 +81,7 @@ function error($code) {
 }
 
 function filterParams($definitions, $params) {
-	$rawParams = $params['raw'];
+	$rawParams = isset($params['raw']) ? $params['raw'] : [];
 	$result = [];
 	foreach ($definitions as $paramName => $definition) {
 		if (!is_array($definition)) {

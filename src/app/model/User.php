@@ -1,9 +1,32 @@
 <?
 namespace User;
 
+require_once LIB_DIR.'/Mysql.php';
+require_once LIB_DIR.'/DbManager.php';
+require_once HELPER_DIR.'/Auth.php';
+
 define('EXECUTOR_ROLE', 0);
 define('CUSTOMER_ROLE', 1);
 define('SYSTEM_ROLE', 2);
+
+/**
+ * @param $login
+ * @param $password
+ *
+ * @return mixed
+ */
+function getByLoginAndPass($login, $password) {
+	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['login' => $login, 'password' => $password]);
+}
+/**
+ * @param $login
+ * @param $password
+ *
+ * @return mixed
+ */
+function getByLogin($login) {
+	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['login' => $login]);
+}
 
 /**
  * Возвращает системного пользователя, которому начисляется коммиссия за операции
@@ -42,7 +65,11 @@ function canWorkOnOrders(array $user = null) {
 }
 
 function get($id) {
-	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['id' => $id]);
+	$user = \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['id' => $id]);
+	if ($user) {
+		$user['role'] = (int) $user['role'];
+	}
+	return $user;
 }
 
 function setMoney($userId, $money) {
@@ -69,28 +96,45 @@ function getUsersByIds(array $ids = [])
  * @param $name
  * @param $login
  * @param $password
+ * @param $passwordConfirm
  * @param $role
  *
  * @throws \Exception
  * @return int|string
  */
-function create($name, $login, $password, $role) {
+function create($name, $login, $password, $passwordConfirm, $role) {
 	$name = trim($name);
 	if (!$name) {
-		throw new \Exception('Представьтесь, пожалуйста', 800);
+		throw new \Exception('Представьтесь, пожалуйста', 813);
 	}
 
 	$login = trim($login);
 	if (!$login) {
-		throw new \Exception('Обязательно нужно выбрать Логин', 800);
+		throw new \Exception('Обязательно нужно выбрать Логин', 812);
+	}
+	if (preg_match('|[^a-zA-Z0-9/]|', $login)) {
+		throw new \Exception('Логин должен состоять из строчных или заглавных латинских букв и цифр', 812);
 	}
 
-	$password = trim($password);
-	if (!$password) {
-		throw new \Exception('Пароль не может быть пустым', 800);
+	if ($password !== $passwordConfirm) {
+		throw new \Exception('Пароли не совпадают', 813);
 	}
+
+	$ok = \AuthHelper\validatePassword($password);
+	if (!$ok) {
+		// todo с одной стороны - надо бы нам узнать, какой пользователь попытался ввести пароль.
+		// А с другой - неэтично
+		throw new \Exception(sprintf('Something wrong with user password! %1', $ok));
+	}
+	$password = \AuthHelper\getPasswordHash($password);
+
 	if (!array_key_exists($role, _allowedRoles())) {
 		throw new \Exception('User must to have a role');
+	}
+
+	$existingUser = \User\getByLogin($login);
+	if ($existingUser) {
+		throw new \Exception('Такой логин уже занят', 814);
 	}
 
 	$id = \Mysql\insert(_getConnect(), _getTable(), [
@@ -128,10 +172,13 @@ function _getColumnList() {
 	];
 }
 
-function _allowedRoles() {
-	return [
+function _allowedRoles($fromForm = true) {
+	$result = [
 		EXECUTOR_ROLE => EXECUTOR_ROLE,
 		CUSTOMER_ROLE => CUSTOMER_ROLE,
-		SYSTEM_ROLE => SYSTEM_ROLE,
 	];
+	if (!$fromForm) {
+		$result[SYSTEM_ROLE] = SYSTEM_ROLE;
+	}
+	return $result;
 }

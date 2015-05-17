@@ -1,6 +1,6 @@
 <?
 	// TODO сделать настраиваемым.
-	error_reporting(7);
+	error_reporting(E_ALL);
 	ini_set('display_errors', 1);
 
 	define('SRC_DIR', __DIR__);
