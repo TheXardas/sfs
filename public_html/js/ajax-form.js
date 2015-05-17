@@ -53,7 +53,10 @@ function onFormLoad(form) {
 				$errorMessage.appendTo(this.$form);
 				return;
 			}
-			// Ошибка, которую показывать клиенту нельзя, обычно фатальная ошибка сервера
+			if (json.result == 1) {
+				$form.trigger('ajax.form.success');
+			}
+			// TODO еще может быть ошибка сервера (fatal), которую тоже надо обработать и предупредить пользователя
 		},
 		complete: function(jqXHR, status) {
 			// Врубаем кнопку назад

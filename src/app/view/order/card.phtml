@@ -1,6 +1,6 @@
 <? /** @var $ctx array */ ?>
 <? require_once HELPER_DIR.'/Date.php' ?>
-<div class="order-card">
+<div class="order-card" id="ord<?= $ctx['order_id'] ?>" >
 	<div class="order-price">
 		<div class="order-price-number"><?= $ctx['price'] ?></div>
 		<div class="order-price-currency">руб.</div>
@@ -11,11 +11,14 @@
 	<div class="order-description large-text">
 		<?= $ctx['description'] ?>
 	</div>
-	<div class="order-work-form-wrapper">
-		<form class="order-work-form form" action="/order/work" method="POST">
-			<div class="form-submit green small">
-				<input type="submit" value="Выполнить" />
-			</div>
-		</form>
-	</div>
+	<? if (\User\canWorkOnOrders()) : ?>
+		<div class="order-work-form-wrapper">
+			<form class="order-work-form form" action="/order/work" method="POST">
+				<input type="hidden" name="orderId" value="<?= $ctx['order_id'] ?>" />
+				<div class="form-submit green small">
+					<input type="submit" value="Выполнить" />
+				</div>
+			</form>
+		</div>
+	<? endif ?>
 </div>

@@ -8,19 +8,6 @@ list($subject, $description, $price) = \Controller\filterParams([
 	'price' => ['int', 0],
 ], $params);
 
-try {
-	$result = \Order\create($subject, $description, $price);
-}
-catch (Exception $e) {
-	$error = $e->getMessage();
-}
+$result = \Order\create($subject, $description, $price);
 
-if ($error) {
-	return [
-		'error' => $error,
-		'forceJson' => true,
-	];
-}
-else {
-	\Controller\redirect('/');
-}
+\Controller\redirect('/');

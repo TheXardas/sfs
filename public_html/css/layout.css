@@ -39,6 +39,9 @@ h3 {
     .current-user {
         float: right;
     }
+        .current-user-account {
+            display: inline-block;
+        }
         .current-user-name {
             display: inline-block;
         }

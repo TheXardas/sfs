@@ -3,11 +3,66 @@ namespace Order;
 require_once LIB_DIR.'/DbManager.php';
 require_once LIB_DIR.'/Mysql.php';
 require_once MODEL_DIR.'/User.php';
+require_once MODEL_DIR.'/Bank.php';
 
 define('ORDER_LIST_LIMIT', 5);
 
 function get($id) {
+	if (!$id) {
+		throw new \Exception('ID required!');
+	}
+	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['id' => $id]);
+}
 
+function work($orderId, array $currentUser) {
+	// TODO залочку, конечно, напишем еще
+	// START LOCK
+
+	if (!\User\canWorkOnOrders($currentUser)) {
+		throw new \Exception('Только исполнители могут работать над заказами.', 802);
+	}
+
+	$order = get($orderId);
+	if (!$order) {
+		throw new \Exception('No order with such id exist!');
+	}
+
+	if ($order['is_finished']) {
+		throw new \Exception('Этот заказ уже завершен.', 801);
+	}
+
+	// Завершаем заказ
+	$result = finishOrder($orderId, $currentUser['id']);
+	if (!$result) {
+		throw new \Exception('Failed finishing order!');
+	}
+
+	// Вычитаем со счета клиента
+	$customer = \User\get($order['author_id']);
+	\Bank\getPaymentFrom($customer, $order['price']);
+
+	// Пишем на счет системы комиссию
+	$systemUser = \User\getSystemUser();
+	$commission = round(\Bank\getSystemCommission() * $order['price']);
+	\Bank\payTo($systemUser, $commission);
+
+	// Платим работнику гонорар
+	$executorPayment = $order['price'] - $commission;
+	// Выбираем из базы текущего пользователя, чтобы точно знать его счет в рамках этой транзакции
+	$executor = \User\get($currentUser['id']);
+	\Bank\payTo($executor, $executorPayment);
+
+	// END LOCK
+}
+
+function finishOrder($orderId, $executorId) {
+	return \Mysql\update(_getConnect(), _getTable(), [
+		'is_finished' => 1,
+		'executor_id' => 1,
+		'time_finished' => time(),
+	], [
+		'id' => $orderId,
+	]);
 }
 
 function getActiveOrders($currentUser, $offset = null) {

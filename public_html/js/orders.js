@@ -15,4 +15,8 @@ $(document).ready(function() {
 			}
 		});
 	});
+	$(document).on('ajax.form.success', '.order-work-form.form', function() {
+		$(this).replaceWith('<div class="form-success">Заказ успешно завершен!</div>');
+		updateAccount();
+	});
 });

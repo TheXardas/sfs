@@ -4,7 +4,12 @@ namespace Controller;
 require_once LIB_DIR.'/View.php';
 
 function process($controller, $action, $params = array()) {
-	$result = run($controller, $action, $params);
+	try {
+		$result = run( $controller, $action, $params );
+	}
+	catch (\Exception $e) {
+		$result = \ErrorHandler\processControllerError($e);
+	}
 
 	// TODO возможно стоит это эксепшном накрыть
 	if (!is_array($result)) {
@@ -20,7 +25,7 @@ function process($controller, $action, $params = array()) {
 		// По сути надо ошибки показывать в той же форме и все.
 
 		// возвращаем json
-		echo json_encode($result);
+		echo json_encode($result['ctx']);
 	}
 	else {
 		// возвращает html
@@ -38,9 +43,14 @@ function run($controller, $action, $params = array()) {
 		throw new \Exception('Failed to find action for requested uri');
 	}
 	if (!file_exists($file)) {
-		throw new \Exception(sprintf('Failed to find action %1%:%2%', $controller, $action));
+		throw new \Exception(sprintf('Failed to find action %1:%2', $controller, $action));
 	}
-	return include $file;
+	$result = include $file;
+
+	if (empty($result)) {
+		throw new \Exception(sprintf('Action should return an array! %1 does not!', $file));
+	}
+	return $result;
 }
 
 function redirect($url, $forceAjax = false) {

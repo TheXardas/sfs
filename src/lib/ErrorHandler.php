@@ -2,7 +2,20 @@
 
 namespace ErrorHandler;
 
-function isClientError($e) {
+function processControllerError(\Exception $e) {
+	if (isClientError($e)) {
+		$result['ctx']['error'] = $e->getMessage();;
+	}
+	else {
+		// TODO печатать ошибку в лог.
+		$result['ctx']['error'] = 'С сервером что-то случилось! Мы уже в курсе, скоро починим!';
+		// TODO убрать на продакшне
+		$result['ctx']['error'] .= $e->getMessage();
+	}
+	return $result;
+}
+
+function isClientError(\Exception $e) {
 	$code = $e->getCode();
 
 	// Необработанные или обычные ошибки
@@ -15,4 +28,6 @@ function isClientError($e) {
 	if ($group === 8) {
 		return true;
 	}
+
+	return false;
 }

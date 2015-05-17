@@ -21,6 +21,7 @@
 		<script type="text/javascript" src="/js/navigator.js"></script>
 		<script type="text/javascript" src="/js/large-text-toggle.js"></script>
 		<script type="text/javascript" src="/js/orders.js"></script>
+		<script type="text/javascript" src="/js/account.js"></script>
 	</head>
 
 	<body>
@@ -31,7 +32,9 @@
 				</a>
 
 				<div class="current-user">
-					<div class="current-user-name">Василий Пупкин</div>
+					<div class="current-user-account"><?= \Session\getCurrentUser()['money'] ?> р.</div>
+
+					<div class="current-user-name"><?= \Session\getCurrentUser()['name'] ?></div>
 					<div class="current-user-logout-link">
 						<a href="/logout">Выйти</a>
 					</div>
@@ -45,11 +48,13 @@
 							Заказы
 						</a>
 					</div>
-					<div class="main-menu-item">
-						<a class="main-menu-item-link-text" href="/neworder">
-							Новый
-						</a>
-					</div>
+					<? if (\User\canCreateOrders()): ?>
+						<div class="main-menu-item">
+							<a class="main-menu-item-link-text" href="/neworder">
+								Новый
+							</a>
+						</div>
+					<? endif ?>
 				</div>
 			</div>
 

@@ -18,17 +18,23 @@ function destroy() {
 }
 
 function getCurrentUser() {
-	return [
+	static $currentUser = null;
+	$id = get('user_id');
+	$id = 123;
+	/*return [
 		'id' => 123,
 		'name' => 'Василий Пупкин',
 		'login' => 'vasyapup',
-		'role' => 1,
+		'role' => 0,
+		'money' => 0,
 	];
+*/
+	if (!$currentUser) {
+		$currentUser = \User\get( $id );
+	}
+	if (!$currentUser) {
+		throw new \Exception('Ошибка авторизации');
+	}
 
-	return [
-		'id' => get('user_id'),
-		'name' => get('user_name'),
-		'login' => get('user_login'),
-		'role' => get('user_role'),
-	];
+	return $currentUser;
 }

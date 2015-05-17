@@ -5,6 +5,50 @@ define('EXECUTOR_ROLE', 0);
 define('CUSTOMER_ROLE', 1);
 define('SYSTEM_ROLE', 2);
 
+/**
+ * Возвращает системного пользователя, которому начисляется коммиссия за операции
+ * @return mixed
+ */
+function getSystemUser() {
+	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['role' => SYSTEM_ROLE], []);
+}
+
+/**
+ *
+ * @param array $user
+ *
+ * @return bool
+ * @throws \Exception
+ */
+function canCreateOrders(array $user = null) {
+	if ($user === NULL) {
+		$user = \Session\getCurrentUser();
+	}
+	return $user['role'] === CUSTOMER_ROLE;
+}
+
+/**
+ * Может ли пользователь работать над заказами
+ *
+ * @param array $user
+ *
+ * @return bool
+ */
+function canWorkOnOrders(array $user = null) {
+	if ($user === NULL) {
+		$user = \Session\getCurrentUser();
+	}
+	return $user['role'] === EXECUTOR_ROLE;
+}
+
+function get($id) {
+	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['id' => $id]);
+}
+
+function setMoney($userId, $money) {
+	// TODO написать в лог, что произошло.
+	return \Mysql\update(_getConnect(), _getTable(), ['money' => $money], ['id' => $userId]);
+}
 
 /**
  * Достает пользователей по массиву id.
@@ -80,6 +124,7 @@ function _getColumnList() {
 		// пароль выбирать нельзя, даже в хэше
 		// 'password' => 'password',
 		'role' => 'role',
+		'money' => 'money',
 	];
 }
 
