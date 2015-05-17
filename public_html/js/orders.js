@@ -5,7 +5,7 @@ $(document).ready(function() {
 		$this.addClass('disabled');
 		$.ajax('/order/list', {
 			data: {
-				offset: $('.orders-list-item').length
+				offset: $('.orders-list-item:not(.finished)').length
 			},
 			success: function(data) {
 				$this.remove();
@@ -16,7 +16,9 @@ $(document).ready(function() {
 		});
 	});
 	$(document).on('ajax.form.success', '.order-work-form.form', function() {
-		$(this).replaceWith('<div class="form-success">Заказ успешно завершен!</div>');
+		var $this = $(this);
+		$this.parents('.orders-list-item').addClass('finished');
+		$this.replaceWith('<div class="form-success">Заказ успешно завершен!</div>');
 		updateAccount();
 	});
 });
