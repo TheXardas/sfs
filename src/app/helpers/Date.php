@@ -2,6 +2,8 @@
 namespace DateHelper;
 
 /**
+ * Функция возвращает красивый формат даты типа "вчера в 12:30".
+ *
  * @param $DateTime
  * @param bool $ShortFormat
  * @param bool $WhenModifier
@@ -81,6 +83,13 @@ function dateFormatBeauty( $DateTime )
 	return $info['day'] . ' ' . $month . (empty($year) ? '' : ' ' . $year);
 }
 
+/**
+ * Возвращает месяц в родительском падеже по его (месяца) порядковому номеру
+ *
+ * @param $monthNumber
+ *
+ * @return mixed
+ */
 function getMonthR($monthNumber) {
 	$months = [
 		'1' => 'января',

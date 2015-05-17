@@ -1,7 +1,15 @@
 <?
-
 namespace ErrorHandler;
 
+// Не уверен, позволено ли считать использование исключений - ООП. Но в целом не так и долго пределать, если что.
+
+/**
+ * Конвертирует Exception контроллера в возвращаемый ответ
+ *
+ * @param \Exception $e
+ *
+ * @return mixed
+ */
 function processControllerError(\Exception $e) {
 	if (isClientError($e)) {
 		$result['ctx']['error'] = $e->getMessage();;
@@ -15,6 +23,13 @@ function processControllerError(\Exception $e) {
 	return $result;
 }
 
+/**
+ * Можно ли выводить ошибку клиенту
+ *
+ * @param \Exception $e
+ *
+ * @return bool
+ */
 function isClientError(\Exception $e) {
 	$code = $e->getCode();
 

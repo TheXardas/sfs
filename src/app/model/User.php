@@ -10,6 +10,8 @@ define('CUSTOMER_ROLE', 1);
 define('SYSTEM_ROLE', 2);
 
 /**
+ * Получает пользователя по его логину-паролю
+ *
  * @param $login
  * @param $password
  *
@@ -19,6 +21,8 @@ function getByLoginAndPass($login, $password) {
 	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['login' => $login, 'password' => $password]);
 }
 /**
+ * Получает пользователя по логину
+ *
  * @param $login
  *
  * @return mixed
@@ -30,6 +34,7 @@ function getByLogin($login) {
 /**
  * Возвращает системного пользователя, которому начисляется коммиссия за операции
  *
+ * @todo на этом запросе можно сэкономить, если закэшировать id пользователя. Он не меняется никогда вообще
  * @param bool $forUpdate
  *
  * @return mixed
@@ -39,6 +44,7 @@ function getSystemUser($forUpdate = false) {
 }
 
 /**
+ * Может ли переданный пользователь создавать заказы
  *
  * @param array $user
  *
@@ -67,6 +73,9 @@ function canWorkOnOrders(array $user = null) {
 }
 
 /**
+ * Вытащить пользователя из БД
+ * Конвертирует роль в (int) для облегчения строготипизированной проверки
+ *
  * @param int $id
  * @param bool $forUpdate
  *
@@ -80,8 +89,16 @@ function get($id, $forUpdate = false) {
 	return $user;
 }
 
+/**
+ * Выставляет пользователю количество денег на счету
+ *
+ * @param $userId
+ * @param $money
+ *
+ * @return int
+ * @throws \Exception
+ */
 function setMoney($userId, $money) {
-	// TODO написать в лог, что произошло.
 	return \Mysql\update(_getConnect(), _getTable(), ['money' => $money], ['id' => $userId]);
 }
 
@@ -161,6 +178,8 @@ function create($name, $login, $password, $passwordConfirm, $role) {
 
 
 /**
+ * Возвращает коннект к БД для текущей модели
+ *
  * @return mixed
  * @throws \Exception
  */
@@ -169,6 +188,8 @@ function _getConnect() {
 }
 
 /**
+ * Возвращает название таблицы БД с текущей моделью для использования в запросах
+ *
  * @return string
  */
 function _getTable() {
@@ -176,6 +197,8 @@ function _getTable() {
 }
 
 /**
+ * Возвращает название БД для текущей модели
+ *
  * @return string
  */
 function _getDbName() {
@@ -183,6 +206,8 @@ function _getDbName() {
 }
 
 /**
+ * Возвращает список колонок, которые можно выбирать из бд для данной модели
+ *
  * @return array
  */
 function _getColumnList() {
@@ -198,6 +223,9 @@ function _getColumnList() {
 }
 
 /**
+ * Список разрешенных ролей.
+ *
+ * @todo в базе не помешает триггер на проверку этого значения
  * @param bool $fromForm
  *
  * @return array

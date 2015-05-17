@@ -1,6 +1,15 @@
 <?
 namespace Router;
 
+/**
+ * Возвращает контроллер-экшн-параметры по uri.
+ * В обычной ситуации это:
+ * /$controller/$action.
+ * В необычной - см. config/router.php
+ *
+ * @param $uri
+ * @return array
+ */
 function getActionFromUri($uri)
 {
 	$routes = getRoutesConfig();
@@ -22,7 +31,6 @@ function getActionFromUri($uri)
 		}
 		return $result;
 	}
-
 
 	// Парсим uri
 	// В случае автоматической маршрутизации не должно быть никаких символов, кроме букв и "/".
@@ -69,6 +77,8 @@ function getActionFromUri($uri)
 }
 
 /**
+ * Возвращает конфигурацию маршрутов
+ *
  * @return mixed
  */
 function getRoutesConfig() {

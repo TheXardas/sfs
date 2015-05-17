@@ -166,6 +166,7 @@ function _escape($connect, $value) {
 }
 
 /**
+ * Возвращает sql-подстроку с колонками для SELECT
  *
  * @param array $columns
  * @return string
@@ -221,6 +222,7 @@ function _getConditionStringFromArray($connect, array $conditions, $forUpdate = 
 
 /**
  * Обрабатывает массив колонок для сортировки колонка => направление, возвращая sql-подстроку для подставки в order by
+ *
  * @param array $orderBy
  * @return string
  */
@@ -239,6 +241,15 @@ function _getOrderByStringFromArray(array $orderBy) {
 	return $sql;
 }
 
+/**
+ * Делает непосредственный запрос в БД
+ *
+ * @param $connect
+ * @param $sql
+ *
+ * @return bool|\mysqli_result
+ * @throws \Exception
+ */
 function _query($connect, $sql) {
 	$result = mysqli_query($connect, $sql);
 	if ($result === false) {

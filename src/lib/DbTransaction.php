@@ -7,6 +7,8 @@ require_once LIB_DIR.'/DbManager.php';
 // TODO подумать над альтернативой глобальных транзакций (мемкеш не очень подходит, т.к. скрипт может упасть)
 
 /**
+ * Начать кросс-серверную транзакцию
+ *
  * @param array $dbNames
  *
  * @return string
@@ -21,6 +23,8 @@ function beginTransaction(array $dbNames) {
 }
 
 /**
+ * Отменить кросс-серверную транзакцию
+ *
  * @param array $dbNames
  * @param $transactionId
  *
@@ -33,6 +37,8 @@ function rollback(array $dbNames, $transactionId) {
 }
 
 /**
+ * Подтвердить кросс-серверную транзакцию
+ *
  * @param array $dbNames
  * @param $transactionId
  *
@@ -46,6 +52,8 @@ function commit(array $dbNames, $transactionId) {
 }
 
 /**
+ * Выполняет транзакционную команду для пачки коннектов
+ *
  * @param array $connections
  * @param $command
  * @param $transactionId
@@ -60,11 +68,14 @@ function queryTransactionCommand(array $connections, $command, $transactionId)
 }
 
 /**
+ * Генерирует уникальный ключ для транзакции
+ *
  * @return string
  * @throws \Exception
  */
 function _getTransactionId() {
 	$currentUser = \Session\getCurrentUser();
 	$transactionId = uniqid($currentUser['id'], true);
+	// TODO сюда можно еще для надежности добавлять запускаемый экшн, и много чего другого
 	return $transactionId;
 }

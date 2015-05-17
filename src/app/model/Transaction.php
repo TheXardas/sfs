@@ -31,6 +31,8 @@ function create($userId, $operation, $amount, $orderId) {
 }
 
 /**
+ * Возвращает коннект к БД для текущей модели
+ *
  * @return mixed
  * @throws \Exception
  */
@@ -39,6 +41,8 @@ function _getConnect() {
 }
 
 /**
+ * Возвращает название таблицы БД с текущей моделью для использования в запросах
+ *
  * @return string
  */
 function _getTable() {
@@ -46,6 +50,8 @@ function _getTable() {
 }
 
 /**
+ * Возвращает название БД для текущей модели
+ *
  * @return string
  */
 function _getDbName() {
@@ -53,6 +59,8 @@ function _getDbName() {
 }
 
 /**
+ * Возвращает список колонок, которые можно выбирать из бд для данной модели
+ *
  * @return array
  */
 function _getColumnList() {

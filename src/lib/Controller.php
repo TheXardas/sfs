@@ -3,6 +3,17 @@ namespace Controller;
 
 require_once LIB_DIR.'/View.php';
 
+/**
+ * Метод, который запускает и обрабатывает экшн.
+ * После работы именного экшна, запускается view.
+ * View может быть как html, так и json, в зависимости от запроса
+ *
+ * @param $controller
+ * @param $action
+ * @param array $params
+ *
+ * @throws \Exception
+ */
 function process($controller, $action, $params = array()) {
 	try {
 		$result = run( $controller, $action, $params );
@@ -11,7 +22,6 @@ function process($controller, $action, $params = array()) {
 		$result = \ErrorHandler\processControllerError($e);
 	}
 
-	// TODO возможно стоит это эксепшном накрыть
 	if (!is_array($result)) {
 		$result = [];
 	}
@@ -21,16 +31,15 @@ function process($controller, $action, $params = array()) {
 	}
 
 	if (\Request\isPost() && \Request\isAjax() || !empty($result['forceJson'])) {
-		// TODO придумать обработку форм, когда по каким-то причинам аякс не работает, и форма посылается нативно.
-		// По сути надо ошибки показывать в той же форме и все.
-
-		// возвращаем json
 		if (array_key_exists('ctx', $result)) {
 			echo json_encode( $result['ctx'] );
 		}
+		// TODO ситуация: аякс, но без ответа в экшне. По сути некорректный экшн.
 	}
 	else {
 		// возвращает html
+
+		// Для встроенных виджетов нужно добавить параметр
 		$embedded = false;
 		if (!empty($params['embedded'])) {
 			$embedded = true;
@@ -39,6 +48,16 @@ function process($controller, $action, $params = array()) {
 	}
 }
 
+/**
+ * Запускает экшн контроллера и возвращает результат работы.
+ *
+ * @param $controller
+ * @param $action
+ * @param array $params
+ *
+ * @return array
+ * @throws \Exception
+ */
 function run($controller, $action, $params = array()) {
 	$file = CONTROLLER_DIR."/$controller/$action.php";
 	if (!$controller || !$action) {
@@ -48,6 +67,8 @@ function run($controller, $action, $params = array()) {
 		throw new \Exception(sprintf('Failed to find action %1:%2', $controller, $action));
 	}
 
+	// Если пользователь залогинен и пытается открыть экшн, который требует авторизации, то выпинчиваем на форму логина.
+	// И наоборот, если пытаемся залогиниться, когда уже сессия есть - отсылаем на список заказов.
 	if (\AuthHelper\isLoggedOn() && !empty($params['noLoginRequired']) || !\AuthHelper\isLoggedOn() && empty($params['noLoginRequired'])) {
 		redirect('/', false, true);
 	}
@@ -59,6 +80,14 @@ function run($controller, $action, $params = array()) {
 	return $result;
 }
 
+/**
+ * Производит редирект
+ * Если запрос пришел по аяксу, то добавляет заголовок для клиентского навигатора: "редиректнись"
+ *
+ * @param $url
+ * @param bool $forceAjax - Если true, то призводит редирект в аякс-запросе, а не передает заголовок для навигатора
+ * @param bool $refreshBrowser - Говорит навигатору, что надо перезагрузить страницу (обновить меню и т.п.)
+ */
 function redirect($url, $forceAjax = false, $refreshBrowser = false) {
 	if (!\Request\isAjax() || $forceAjax) {
 		header("Location: $url");
@@ -72,14 +101,20 @@ function redirect($url, $forceAjax = false, $refreshBrowser = false) {
 	exit;
 }
 
-function delegateTo($controller, $action, $params = array()) {
-	return run($controller, $action, $params);
-}
-
-function error($code) {
-	// todo implement
-}
-
+/**
+ * Фильтрует параметры запроса на основе переданных спецификаций
+ * Метод для использования в экшнах.
+ * Формат спецификаций:
+ * array(
+ *    'paramName' => ['paramType', 'defaultValue']
+ * );
+ *
+ * @param $definitions
+ * @param $params
+ *
+ * @return array
+ * @throws \Exception
+ */
 function filterParams($definitions, $params) {
 	$rawParams = isset($params['raw']) ? $params['raw'] : [];
 	$result = [];
@@ -104,6 +139,16 @@ function filterParams($definitions, $params) {
 	return $result;
 }
 
+/**
+ * Фильтрует значение в зависимости от его типа
+ *
+ * @param $value
+ * @param $type
+ *
+ * @return array|int|string
+ * @throws \Exception
+ * @todo доработать, проверки детские.
+ */
 function filterParamByType($value, $type) {
 	switch ($type) {
 		case 'string':
@@ -114,6 +159,7 @@ function filterParamByType($value, $type) {
 			$value = (int) $value;
 			break;
 		case 'array':
+			// TODO возможность передавать тип значений массива
 			$value = (array) $value;
 			break;
 		default:

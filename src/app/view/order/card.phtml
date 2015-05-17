@@ -5,7 +5,7 @@
 		<div class="order-price-number"><?= $ctx['price'] ?></div>
 		<div class="order-price-currency">руб.</div>
 	</div>
-	<div class="order-author"><?= $ctx['author']['name'] ?></div>
+	<div class="order-author"><?= $ctx['authorName'] ?></div>
 	<div class="order-time-created"><?= \DateHelper\formatBeautyTime($ctx['time_created']) ?></div>
 	<div class="order-subject"><?= $ctx['subject'] ?></div>
 	<div class="order-description large-text">

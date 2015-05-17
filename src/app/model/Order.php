@@ -9,6 +9,8 @@ require_once LIB_DIR.'/DbTransaction.php';
 define('ORDER_LIST_LIMIT', 5);
 
 /**
+ * Получить заказ по его ID.
+ *
  * @param $id
  * @param $forUpdate
  *
@@ -23,6 +25,8 @@ function get($id, $forUpdate = false) {
 }
 
 /**
+ * Выполнить работу по заказу
+ *
  * @param $orderId
  * @param array $currentUser
  *
@@ -85,6 +89,8 @@ function work($orderId, array $currentUser = null) {
 }
 
 /**
+ * Завершаем заказ
+ *
  * @param $orderId
  * @param $executorId
  *
@@ -102,6 +108,8 @@ function finishOrder($orderId, $executorId) {
 }
 
 /**
+ * Возвращает активные заказы для пользователя
+ *
  * @param $currentUser
  * @param null $offset
  *
@@ -121,6 +129,9 @@ function getActiveOrders($currentUser, $offset = null) {
 }
 
 /**
+ * Возвращает количество активных заказов для пользователя
+ *
+ * @todo как-нибудь интегрировать в getActiveOrders, что ли
  * @param $currentUser
  *
  * @return int|mixed
@@ -139,6 +150,8 @@ function getActiveOrdersCount($currentUser) {
 }
 
 /**
+ * Возвращает активные заказы для исполнителя
+ *
  * @param $executorId
  * @param null $offset
  *
@@ -152,6 +165,8 @@ function getActiveOrdersForExecutor($executorId, $offset = null) {
 }
 
 /**
+ * Считает активные заказы для исполнителя
+ *
  * @param $executorId
  *
  * @return int|mixed
@@ -162,6 +177,8 @@ function getActiveOrdersCountForExecutor($executorId) {
 }
 
 /**
+ * Возвращает активные заказы для заказчика
+ *
  * @param $customerId
  * @param null $offset
  *
@@ -175,6 +192,8 @@ function getActiveOrdersForCustomer($customerId, $offset = null) {
 }
 
 /**
+ * Считает активные заказы для заказчика
+ *
  * @param $customerId
  *
  * @return int|mixed
@@ -185,6 +204,9 @@ function getActiveOrdersCountForCustomer($customerId) {
 }
 
 /**
+ * Достает из базы заказы
+ * После чего добавляет массив 'author', с параметрами автора заказа
+ *
  * @param $where
  * @param null $orderBy
  * @param null $limit
@@ -219,6 +241,8 @@ function getOrders($where, $orderBy = null, $limit = null, $offset = null) {
 }
 
 /**
+ * Посчитать заказы
+ *
  * @param $where
  *
  * @return int|mixed
@@ -291,6 +315,8 @@ function create($subject, $description, $price, $author_id = null, $time_created
 
 
 /**
+ * Возвращает коннект к БД для текущей модели
+ *
  * @return mixed
  * @throws \Exception
  */
@@ -299,6 +325,8 @@ function _getConnect() {
 }
 
 /**
+ * Возвращает название таблицы БД с текущей моделью для использования в запросах
+ *
  * @return string
  */
 function _getTable() {
@@ -306,6 +334,8 @@ function _getTable() {
 }
 
 /**
+ * Возвращает название БД для текущей модели
+ *
  * @return string
  */
 function _getDbName() {
@@ -313,6 +343,8 @@ function _getDbName() {
 }
 
 /**
+ * Возвращает список колонок, которые можно выбирать из бд для данной модели
+ *
  * @return array
  */
 function _getColumnList() {

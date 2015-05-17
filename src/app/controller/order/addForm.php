@@ -1,6 +1,6 @@
 <?
 if (!\User\canCreateOrders()) {
-	// TODO ошибка?
+	// TODO ошибка 403?
 	\Controller\redirect('/');
 }
 

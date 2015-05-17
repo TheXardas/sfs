@@ -3,15 +3,19 @@ namespace View;
 
 /**
  * TODO Придумать, как можно кэшировать содержимое блоков без хранения в памяти, при этом давая возможность переопределять блоки
- * без ООП, чутка, нетривиально.
  * TODO Добавить возможность передавать ключи в название блока - append, prepend и т.п.
  */
 
 /**
+ * Прочитать и вернуть вьюху
  * Главный метод обработки шаблона
  *
- * @return string
+ * @param string $view название вьюхи
+ * @param array $ctx контекст, который подготовил контроллер для вью. Это данные которые собственно нужно отображать.
+ * @param bool $embedded Является ли данный рендер - рендером встроенного виджета.
+ *
  * @throws \Exception
+ * @return string
  */
 function render($view, $ctx = [], $embedded = false) {
 	$layout = '%#main-content#%';
@@ -56,7 +60,10 @@ function extend($view) {
  *
  * @param $parentBlockContent
  * @param $blockName
+ *
+ * @return mixed
  * @throws \Exception
+ * @todo доработать
  */
 function b($parentBlockContent, $blockName) {
 	// Закрываем блок

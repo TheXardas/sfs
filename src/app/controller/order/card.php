@@ -10,10 +10,10 @@ if (!$order || empty($order['subject']) || empty($order['description'])) {
 return [
 	'ctx' => [
 		'order_id' => $order['id'],
-		'subject' => $order['subject'],
+		'subject' => \View\esc($order['subject']),
 		'description' => \View\esc($order['description']),
 		'price' =>  $order['price'],
 		'time_created' => date('Y-m-d H:i:s', $order['time_created']),
-		'author' => $order['author'],
+		'authorName' => $order['author']['name'],
 	],
 ];

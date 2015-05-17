@@ -35,7 +35,7 @@
 					<div class="current-user">
 						<div class="current-user-account"><?= $currentUser['money'] ?> р.</div>
 
-						<div class="current-user-name"><?= $currentUser['name'] ?></div>
+						<div class="current-user-name"><?= \View\esc($currentUser['name']) ?></div>
 						<div class="current-user-logout-link">
 							<a href="/logout">Выйти</a>
 						</div>

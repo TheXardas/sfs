@@ -15,6 +15,8 @@ function isLoggedOn() {
 }
 
 /**
+ * Создать сессию пользователя на основе логина-пароля
+ *
  * @param $login
  * @param $password
  *
@@ -31,13 +33,16 @@ function login($login, $password) {
 }
 
 /**
- *
+ * Вылогиниваемся
  */
 function logout() {
 	session_destroy();
 }
 
 /**
+ * Проверяет соответствие пароля бизнес-логике
+ * Считаем, что пароль может быть набран латиницей и цифрами
+ *
  * @param $password
  *
  * @return bool
@@ -55,6 +60,8 @@ function validatePassword($password) {
 }
 
 /**
+ * Считаем хэш от пароля для хранения в БД.
+ *
  * @param $password
  *
  * @return string
