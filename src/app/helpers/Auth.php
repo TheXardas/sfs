@@ -28,6 +28,11 @@ function login($login, $password) {
 	if (!$user) {
 		return false;
 	}
+	// Системой логиниться нельзя
+	if (!array_key_exists($user['role'], \User\_allowedRoles(true))) {
+		return false;
+	}
+
 	\Session\set('user_id', $user['id']);
 	return $user;
 }

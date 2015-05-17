@@ -1,7 +1,7 @@
 <?
 	// TODO сделать настраиваемым.
-	error_reporting(E_ALL);
-	ini_set('display_errors', 1);
+	// error_reporting(E_ALL);
+	ini_set('display_errors', 0);
 
 	define('SRC_DIR', __DIR__);
 	define('LIB_DIR', SRC_DIR.'/lib');
