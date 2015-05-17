@@ -55,7 +55,6 @@ function getUniqueConnectionsByDbNames($dbNames) {
  * @throws \Exception
  */
 function getTable($modelName) {
-	static $tables = [];
 	$dbName = \Config\get("db.$modelName.name");
 	$tableName = $modelName;
 	return "$dbName.$tableName";
