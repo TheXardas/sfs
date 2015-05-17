@@ -22,10 +22,10 @@ function destroy() {
 	return session_destroy();
 }
 
-function getCurrentUser() {
+function getCurrentUser($reReadFromDb = false) {
 	static $currentUser = null;
 	$id = get('user_id');
-	if ($id && !$currentUser) {
+	if ($id && (!$currentUser || $reReadFromDb)) {
 		$currentUser = \User\get( $id );
 		if (!$currentUser) {
 			throw new \Exception('Ошибка авторизации');

@@ -30,14 +30,31 @@ function create($userId, $operation, $amount, $orderId) {
 	]);
 }
 
+/**
+ * @return mixed
+ * @throws \Exception
+ */
 function _getConnect() {
-	return \DbManager\connect('transactions');
+	return \DbManager\connect(_getDbName());
 }
 
+/**
+ * @return string
+ */
 function _getTable() {
-	return \DbManager\getTable('transactions');
+	return \DbManager\getTable(_getDbName());
 }
 
+/**
+ * @return string
+ */
+function _getDbName() {
+	return 'transactions';
+}
+
+/**
+ * @return array
+ */
 function _getColumnList() {
 	return [
 		'id' => 'id',

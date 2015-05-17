@@ -8,8 +8,11 @@ list($orderId) = \Controller\filterParams([
 $currentUser = \Session\getCurrentUser();
 \Order\work($orderId, $currentUser);
 
+$currentUser = \Session\getCurrentUser(true);
+
 return [
 	'ctx' => [
 		'result' => 1,
+		'userAccount' => $currentUser['money'],
 	],
 ];

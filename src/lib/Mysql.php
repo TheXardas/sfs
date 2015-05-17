@@ -10,12 +10,13 @@ namespace Mysql;
  * @param array $columns
  * @param array $where
  * @param array $orderBy
+ * @param bool $forUpdate
  *
  * @return mixed
  * @throws \Exception
  */
-function selectOne($connect, $table, array $columns, array $where, array $orderBy = []) {
-	$result = select($connect, $table, $columns, $where, $orderBy, 1);
+function selectOne($connect, $table, array $columns, array $where, array $orderBy = [], $forUpdate = false) {
+	$result = select($connect, $table, $columns, $where, $orderBy, 1, null, null, $forUpdate);
 	return reset($result);
 }
 
@@ -42,10 +43,12 @@ function count($connect, $table, array $where) {
  * @param array $orderBy Массив параметров для сортировки вида колонка => направление сортировки
  * @param int $limit Сколько записей нужно выбрать
  * @param int $offset Начиная с какой записи будем выбирать
+ * @param bool $assocById Вернуть массив, в котором ключи будут являться идентификаторами
+ * @param bool $forUpdate Использовать ли залочку FOR UPDATE
  * @return array
  * @throws \Exception
  */
-function select($connect, $table, array $columns, array $where, array $orderBy = [], $limit = NULL, $offset = NULL, $assocById = false)
+function select($connect, $table, array $columns, array $where, array $orderBy = [], $limit = NULL, $offset = NULL, $assocById = false, $forUpdate = false)
 {
 	$columnsStr = _getColumnsStringFromArray($columns);
 	if (!$columnsStr) {
@@ -72,6 +75,10 @@ function select($connect, $table, array $columns, array $where, array $orderBy =
 			$sql .= "$offset, ";
 		}
 		$sql .= $limit;
+	}
+
+	if ($forUpdate) {
+		$sql .= ' FOR UPDATE';
 	}
 
 	$res = _query($connect, $sql);

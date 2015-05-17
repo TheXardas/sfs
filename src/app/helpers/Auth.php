@@ -9,6 +9,7 @@ require_once LIB_DIR.'/Session.php';
  */
 function isLoggedOn() {
 	// TODO проверять IP, браузер и прочие подозрительные штуки на предмет session-highjack.
+	// TODO хранить хэш от хэша пароля и перепроверять его все время
 	$user = \Session\getCurrentUser();
 	return $user && $user['id'];
 }

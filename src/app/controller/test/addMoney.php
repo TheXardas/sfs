@@ -1,4 +1,5 @@
 <?
+// ! только для демо
 require_once HELPER_DIR.'/Auth.php';
 require_once MODEL_DIR.'/Bank.php';
 

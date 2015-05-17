@@ -20,7 +20,6 @@ function getByLoginAndPass($login, $password) {
 }
 /**
  * @param $login
- * @param $password
  *
  * @return mixed
  */
@@ -30,10 +29,13 @@ function getByLogin($login) {
 
 /**
  * Возвращает системного пользователя, которому начисляется коммиссия за операции
+ *
+ * @param bool $forUpdate
+ *
  * @return mixed
  */
-function getSystemUser() {
-	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['role' => SYSTEM_ROLE], []);
+function getSystemUser($forUpdate = false) {
+	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['role' => SYSTEM_ROLE], [], $forUpdate);
 }
 
 /**
@@ -64,8 +66,14 @@ function canWorkOnOrders(array $user = null) {
 	return $user['role'] === EXECUTOR_ROLE;
 }
 
-function get($id) {
-	$user = \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['id' => $id]);
+/**
+ * @param int $id
+ * @param bool $forUpdate
+ *
+ * @return mixed
+ */
+function get($id, $forUpdate = false) {
+	$user = \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['id' => $id], [], $forUpdate);
 	if ($user) {
 		$user['role'] = (int) $user['role'];
 	}
@@ -83,11 +91,11 @@ function setMoney($userId, $money) {
  * @param int[] $ids
  * @return array
  */
-function getUsersByIds(array $ids = [])
+function getUsersByIds(array $ids = [], $forUpdate = false)
 {
 	return \Mysql\select(_getConnect(), _getTable(), _getColumnList(), [
 		'id' => $ids
-	], [], NULL, NULL, true);
+	], [], NULL, NULL, true, $forUpdate);
 }
 
 /**
@@ -152,14 +160,31 @@ function create($name, $login, $password, $passwordConfirm, $role) {
 }
 
 
+/**
+ * @return mixed
+ * @throws \Exception
+ */
 function _getConnect() {
-	return \DbManager\connect('users');
+	return \DbManager\connect(_getDbName());
 }
 
+/**
+ * @return string
+ */
 function _getTable() {
-	return \DbManager\getTable('users');
+	return \DbManager\getTable(_getDbName());
 }
 
+/**
+ * @return string
+ */
+function _getDbName() {
+	return 'users';
+}
+
+/**
+ * @return array
+ */
 function _getColumnList() {
 	return [
 		'id' => 'id',
@@ -172,6 +197,11 @@ function _getColumnList() {
 	];
 }
 
+/**
+ * @param bool $fromForm
+ *
+ * @return array
+ */
 function _allowedRoles($fromForm = true) {
 	$result = [
 		EXECUTOR_ROLE => EXECUTOR_ROLE,

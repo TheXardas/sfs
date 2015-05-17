@@ -28,6 +28,26 @@ function connect($dbName) {
 }
 
 /**
+ * Возвращает список уникальных коннектов к серверам по названиям их БД.
+ *
+ * @param $dbNames
+ *
+ * @return array
+ * @throws \Exception
+ */
+function getUniqueConnectionsByDbNames($dbNames) {
+	$uniqueConnections = [];
+	// TODO можно статически закэшировать, но возможно без serialize($dbNames) будет быстрее.
+	foreach ($dbNames as $dbName) {
+		$host = \Config\get("db.$dbName.host");
+		if (!array_key_exists($host, $uniqueConnections)) {
+			$uniqueConnections[$host] = connect($dbName);
+		}
+	}
+	return array_values($uniqueConnections);
+}
+
+/**
  * Возвращает название таблички для выборки (с БД).
  *
  * @param $modelName

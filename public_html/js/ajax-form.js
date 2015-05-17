@@ -55,6 +55,10 @@ function onFormLoad(form) {
 			}
 			if (json.result == 1) {
 				$form.trigger('ajax.form.success');
+				// TODO Это должно работать на событиях. Для дэмо позволил себе хак.
+				if (json.userAccount) {
+					$('.current-user-account').text(json.userAccount+' р.');
+				}
 			}
 			// TODO еще может быть ошибка сервера (fatal), которую тоже надо обработать и предупредить пользователя
 		},

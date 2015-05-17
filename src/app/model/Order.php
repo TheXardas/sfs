@@ -4,20 +4,22 @@ require_once LIB_DIR.'/DbManager.php';
 require_once LIB_DIR.'/Mysql.php';
 require_once MODEL_DIR.'/User.php';
 require_once MODEL_DIR.'/Bank.php';
+require_once LIB_DIR.'/DbTransaction.php';
 
 define('ORDER_LIST_LIMIT', 5);
 
 /**
  * @param $id
+ * @param $forUpdate
  *
  * @return mixed
  * @throws \Exception
  */
-function get($id) {
+function get($id, $forUpdate = false) {
 	if (!$id) {
 		throw new \Exception('ID required!');
 	}
-	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['id' => $id]);
+	return \Mysql\selectOne(_getConnect(), _getTable(), _getColumnList(), ['id' => $id], [], $forUpdate);
 }
 
 /**
@@ -26,45 +28,60 @@ function get($id) {
  *
  * @throws \Exception
  */
-function work($orderId, array $currentUser) {
-	// TODO залочку, конечно, напишем еще
-	// START LOCK
+function work($orderId, array $currentUser = null) {
+	$dbs = [
+		\Order\_getDbName(),
+		\User\_getDbName(),
+		\Transaction\_getDbName(),
+	];
+	$transactionId = \DbTransaction\beginTransaction($dbs);
 
-	if (!\User\canWorkOnOrders($currentUser)) {
-		throw new \Exception('Только исполнители могут работать над заказами.', 802);
+	try {
+		if (!$currentUser) {
+			$currentUser = \Session\getCurrentUser(true);
+		}
+		else {
+			// Выбираем из базы текущего пользователя, чтобы точно знать его счет в рамках этой транзакции
+			$currentUser = \User\get($currentUser['id'], true);
+		}
+
+		if (!\User\canWorkOnOrders($currentUser)) {
+			throw new \Exception('Только исполнители могут работать над заказами.', 802);
+		}
+
+		$order = get($orderId, true);
+		if (!$order) {
+			throw new \Exception('No order with such id exist!');
+		}
+
+		if ($order['is_finished']) {
+			throw new \Exception('Этот заказ уже завершен.', 801);
+		}
+
+		// Завершаем заказ
+		$result = finishOrder($orderId, $currentUser['id']);
+		if (!$result) {
+			throw new \Exception('Failed finishing order!');
+		}
+
+		// Вычитаем со счета клиента
+		$customer = \User\get($order['author_id'], true);
+		\Bank\getPaymentFrom($customer, $order['price'], $orderId, GET_PAYMENT_FOR_WORK_OPERATION);
+
+		// Пишем на счет системы комиссию
+		$systemUser = \User\getSystemUser(true);
+		$commission = round(\Bank\getSystemCommission() * $order['price']);
+		\Bank\payTo($systemUser, $commission, $orderId, SYSTEM_COMMISSION_OPERATION);
+
+		// Платим работнику гонорар
+		$executorPayment = $order['price'] - $commission;
+		\Bank\payTo($currentUser, $executorPayment, $orderId, PAY_FOR_WORK_OPERATION);
+		\DbTransaction\commit($dbs, $transactionId);
 	}
-
-	$order = get($orderId);
-	if (!$order) {
-		throw new \Exception('No order with such id exist!');
+	catch (\Exception $e) {
+		\DbTransaction\rollback($dbs, $transactionId);
+		throw $e;
 	}
-
-	if ($order['is_finished']) {
-		throw new \Exception('Этот заказ уже завершен.', 801);
-	}
-
-	// Завершаем заказ
-	$result = finishOrder($orderId, $currentUser['id']);
-	if (!$result) {
-		throw new \Exception('Failed finishing order!');
-	}
-
-	// Вычитаем со счета клиента
-	$customer = \User\get($order['author_id']);
-	\Bank\getPaymentFrom($customer, $order['price'], $orderId, GET_PAYMENT_FOR_WORK_OPERATION);
-
-	// Пишем на счет системы комиссию
-	$systemUser = \User\getSystemUser();
-	$commission = round(\Bank\getSystemCommission() * $order['price']);
-	\Bank\payTo($systemUser, $commission, $orderId, SYSTEM_COMMISSION_OPERATION);
-
-	// Платим работнику гонорар
-	$executorPayment = $order['price'] - $commission;
-	// Выбираем из базы текущего пользователя, чтобы точно знать его счет в рамках этой транзакции
-	$executor = \User\get($currentUser['id']);
-	\Bank\payTo($executor, $executorPayment, $orderId, PAY_FOR_WORK_OPERATION);
-
-	// END LOCK
 }
 
 /**
@@ -77,7 +94,7 @@ function work($orderId, array $currentUser) {
 function finishOrder($orderId, $executorId) {
 	return \Mysql\update(_getConnect(), _getTable(), [
 		'is_finished' => 1,
-		'executor_id' => 1,
+		'executor_id' => $executorId,
 		'time_finished' => time(),
 	], [
 		'id' => $orderId,
@@ -278,14 +295,21 @@ function create($subject, $description, $price, $author_id = null, $time_created
  * @throws \Exception
  */
 function _getConnect() {
-	return \DbManager\connect('orders');
+	return \DbManager\connect(_getDbName());
 }
 
 /**
  * @return string
  */
 function _getTable() {
-	return \DbManager\getTable('orders');
+	return \DbManager\getTable(_getDbName());
+}
+
+/**
+ * @return string
+ */
+function _getDbName() {
+	return 'orders';
 }
 
 /**

@@ -1,5 +1,4 @@
 <?
-	sleep(1);
 require_once MODEL_DIR.'/Order.php';
 
 list($subject, $description, $price) = \Controller\filterParams([
