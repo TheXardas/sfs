@@ -65,10 +65,10 @@ function process($controller, $action, $params = array()) {
 function run($controller, $action, $params = array()) {
 	$file = CONTROLLER_DIR."/$controller/$action.php";
 	if (!$controller || !$action) {
-		throw new \Exception('Failed to find action for requested uri');
+		throw new \Exception('Failed to find action for requested uri', 404);
 	}
 	if (!file_exists($file)) {
-		throw new \Exception(sprintf('Failed to find action %1s:%2s', $controller, $action));
+		throw new \Exception(sprintf('Failed to find action %1s:%2s', $controller, $action), 404);
 	}
 
 	// Если пользователь залогинен и пытается открыть экшн, который требует авторизации, то выпинчиваем на форму логина.

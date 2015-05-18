@@ -14,6 +14,11 @@ function processControllerError(\Exception $e) {
 	if (isClientError($e)) {
 		$result['ctx']['error'] = $e->getMessage();;
 	}
+	elseif (isNotFoundError($e)) {
+		//http_response_code(404);
+		//throw $e;
+		\Controller\redirect('/');
+	}
 	else {
 		throw $e;
 	}
@@ -42,4 +47,14 @@ function isClientError(\Exception $e) {
 	}
 
 	return false;
+}
+
+/**
+ * @param \Exception $e
+ *
+ * @return bool
+ */
+function isNotFoundError(\Exception $e)
+{
+	return $e->getCode() === 404;
 }
