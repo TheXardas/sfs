@@ -18,7 +18,7 @@ function connect($dbName) {
 		$pass = \Config\get("db.$dbName.pass");
 		$connect = mysqli_connect( $host, $user, $pass );
 		if (mysqli_connect_errno() !== 0) {
-			throw new \Exception(sprintf('Failed connecting to database %1', $dbName));
+			throw new \Exception(sprintf('Failed connecting to database %1s', $dbName));
 		}
 		mysqli_set_charset($connect, 'utf8');
 

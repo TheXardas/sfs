@@ -1,12 +1,14 @@
 <?
 require_once MODEL_DIR.'/Order.php';
 
-list($orderId) = \Controller\filterParams([
+list($orderId, $authorId) = \Controller\filterParams([
 	'orderId' => ['integer', 0],
+	// authorId - для оптимизации. Потом надо обязательно проверить его соответствие тому, который в заказе.
+	'authorId' => ['integer', 0],
 ], $params);
 
-$currentUser = \Session\getCurrentUser();
-\Order\work($orderId, $currentUser);
+$currentUserId = \Session\getCurrentUserId();
+\Order\work($orderId, $currentUserId, $authorId);
 
 $currentUser = \Session\getCurrentUser(true);
 

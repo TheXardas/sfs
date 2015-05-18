@@ -74,8 +74,8 @@ function queryTransactionCommand(array $connections, $command, $transactionId)
  * @throws \Exception
  */
 function _getTransactionId() {
-	$currentUser = \Session\getCurrentUser();
-	$transactionId = uniqid($currentUser['id'], true);
+	$currentUserId = \Session\getCurrentUserId();
+	$transactionId = uniqid($currentUserId, true);
 	// TODO сюда можно еще для надежности добавлять запускаемый экшн, и много чего другого
 	return $transactionId;
 }

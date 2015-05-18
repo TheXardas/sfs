@@ -34,6 +34,11 @@ function onFormLoad(form) {
 			// Вырубаем кнопку, пока всё грузится
 			$form.find('.form-submit input').prop('disabled', true);
 		},
+		error: function() {
+			var $errorMessage = $('<div class="form-error">С сервером что-то случилось! Мы уже в курсе, скоро починим!</div>');
+			$errorMessage.appendTo(this.$form);
+			return;
+		},
 		success: function(data, status, jqXHR) {
 			var json = {};
 			try {

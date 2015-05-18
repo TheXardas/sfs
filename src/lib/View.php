@@ -28,7 +28,7 @@ function render($view, $ctx = [], $embedded = false) {
 	ob_start();
 	$viewFile = VIEW_DIR."$view.phtml";
 	if (!file_exists($viewFile)) {
-		throw new \Exception(sprintf('Failed finding view! %1', $view));
+		throw new \Exception(sprintf('Failed finding view! %1s', $view));
 	}
 	include $viewFile;
 	$content = ob_get_clean();
@@ -92,7 +92,7 @@ function injectBlock($parentBlockContent, $blockName, $blockContent) {
 		return str_replace('%#'.$blockName.'#%', $blockContent, $parentBlockContent);
 	}
 	else {
-		throw new \Exception(sprintf('No block named %1% found in extended template', $blockName));
+		throw new \Exception(sprintf('No block named %1s found in extended template', $blockName));
 	}
 }
 

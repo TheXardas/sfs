@@ -1,3 +1,3 @@
 function updateAccount() {
-	console.log('updating account');
+	// TODO здесь на самом деле должно быть обновление счета по аяксу или из заголовках ответа
 }

@@ -47,6 +47,15 @@ function destroy() {
 }
 
 /**
+ * Возвращает ID текущего залогиненного пользователя
+ *
+ * @return int|null
+ */
+function getCurrentUserId() {
+	return get('user_id');
+}
+
+/**
  * Возвращает текущего залогиненного пользователя
  *
  * @param bool $reReadFromDb
@@ -56,7 +65,7 @@ function destroy() {
  */
 function getCurrentUser($reReadFromDb = false) {
 	static $currentUser = null;
-	$id = get('user_id');
+	$id = getCurrentUserId();
 	if ($id && (!$currentUser || $reReadFromDb)) {
 		$currentUser = \User\get( $id );
 		if (!$currentUser) {

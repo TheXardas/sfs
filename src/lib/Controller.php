@@ -64,7 +64,7 @@ function run($controller, $action, $params = array()) {
 		throw new \Exception('Failed to find action for requested uri');
 	}
 	if (!file_exists($file)) {
-		throw new \Exception(sprintf('Failed to find action %1:%2', $controller, $action));
+		throw new \Exception(sprintf('Failed to find action %1s:%2s', $controller, $action));
 	}
 
 	// Если пользователь залогинен и пытается открыть экшн, который требует авторизации, то выпинчиваем на форму логина.
@@ -74,8 +74,8 @@ function run($controller, $action, $params = array()) {
 	}
 	$result = include $file;
 
-	if (empty($result)) {
-		throw new \Exception(sprintf('Action should return an array! %1 does not!', $file));
+	if (!is_array(($result))) {
+		throw new \Exception(sprintf('Action should return an array! %1s does not!', $file));
 	}
 	return $result;
 }
@@ -163,7 +163,7 @@ function filterParamByType($value, $type) {
 			$value = (array) $value;
 			break;
 		default:
-			throw new \Exception(sprintf('Unknown parameter type: %1', $type));
+			throw new \Exception(sprintf('Unknown parameter type: %1s', $type));
 	}
 
 	return $value;

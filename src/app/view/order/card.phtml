@@ -15,6 +15,7 @@
 		<div class="order-work-form-wrapper">
 			<form class="order-work-form form" action="/order/work" method="POST">
 				<input type="hidden" name="orderId" value="<?= $ctx['order_id'] ?>" />
+				<input type="hidden" name="authorId" value="<?= $ctx['authorId'] ?>" />
 				<div class="form-submit green small">
 					<input type="submit" value="Выполнить" />
 				</div>

@@ -15,5 +15,6 @@ return [
 		'price' =>  $order['price'],
 		'time_created' => date('Y-m-d H:i:s', $order['time_created']),
 		'authorName' => $order['author']['name'],
+		'authorId' => $order['author']['id'],
 	],
 ];

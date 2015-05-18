@@ -108,11 +108,15 @@ function setMoney($userId, $money) {
  * @param int[] $ids
  * @return array
  */
-function getUsersByIds(array $ids = [], $forUpdate = false)
+function getByIds(array $ids = [], $forUpdate = false)
 {
-	return \Mysql\select(_getConnect(), _getTable(), _getColumnList(), [
+	$users = \Mysql\select(_getConnect(), _getTable(), _getColumnList(), [
 		'id' => $ids
 	], [], NULL, NULL, true, $forUpdate);
+	foreach ($users as $key => $user) {
+		$users[$key]['role'] = (int) $user['role'];
+	}
+	return $users;
 }
 
 /**
@@ -149,7 +153,7 @@ function create($name, $login, $password, $passwordConfirm, $role) {
 	if (!$ok) {
 		// todo с одной стороны - надо бы нам узнать, какой пользователь попытался ввести пароль.
 		// А с другой - неэтично
-		throw new \Exception(sprintf('Something wrong with user password! %1', $ok));
+		throw new \Exception(sprintf('Something wrong with user password! %1s', $ok));
 	}
 	$password = \AuthHelper\getPasswordHash($password);
 

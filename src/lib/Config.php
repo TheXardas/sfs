@@ -13,7 +13,7 @@ function get($key) {
 	if (isset($key)) {
 		return $config[$key];
 	}
-	throw new \Exception(sprintf('Undefined config key: %1', $key));
+	throw new \Exception(sprintf('Undefined config key: %1s', $key));
 }
 
 /**
