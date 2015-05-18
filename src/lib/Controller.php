@@ -34,9 +34,13 @@ function process($controller, $action, $params = array()) {
 		if (array_key_exists('ctx', $result)) {
 			echo json_encode( $result['ctx'] );
 		}
-		// TODO ситуация: аякс, но без ответа в экшне. По сути некорректный экшн.
 	}
 	else {
+		if (!empty($result['ctx']['error'])) {
+			// Это может быть если перешли вручную в браузере на экшн, который должен быть аяксовым.
+			redirect('/');
+		}
+
 		// возвращает html
 
 		// Для встроенных виджетов нужно добавить параметр

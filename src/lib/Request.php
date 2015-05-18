@@ -14,11 +14,15 @@ function isAjax() {
 /**
  * Возвращает параметры запроса
  *
- * @todo Не лишним будет для post брать только post.
  * @return mixed
  */
 function getParams() {
-	return $_REQUEST;
+	if (isPost()) {
+		return $_POST;
+	}
+	else {
+		return $_GET;
+	}
 }
 
 /**

@@ -15,10 +15,7 @@ function processControllerError(\Exception $e) {
 		$result['ctx']['error'] = $e->getMessage();;
 	}
 	else {
-		// TODO печатать ошибку в лог.
-		$result['ctx']['error'] = 'С сервером что-то случилось! Мы уже в курсе, скоро починим!';
-		// TODO убрать на продакшне
-		$result['ctx']['error'] .= $e->getMessage();
+		throw $e;
 	}
 	return $result;
 }
